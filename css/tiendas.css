@@ -18,6 +18,7 @@
     align-items: center;
     cursor: pointer;
     padding-bottom: 16px;
+    width: fit-content;
 }
 
 .accordion-button::before {
@@ -107,6 +108,10 @@
     padding: 16px 18px;
     background: #F5F5F5;
     border-radius: 4px 4px 0px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .card-body {
@@ -248,6 +253,10 @@
     span.badge.bg-primary {
         float: right;
     }
+
+    span.badge.bg-danger {
+        float: right;
+    }
 }
 
 @media(min-width:992px) {
@@ -290,12 +299,11 @@
 h2.card-subtitle {
     color: var(--primary-color2);
     place-items: center;
-    font-size: 18px;
     margin-top: 0px;
     margin-bottom: 0px;
     justify-content: space-between;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-size: 18px !important;

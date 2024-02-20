@@ -3,15 +3,12 @@ const hora = fecha.toLocaleTimeString();
 const horaMin = hora.substr(0, 5);
 const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
-var urlKT = "https://feeds.datafeedwatch.com/95958/fb2f5eb90322be8f5cb1aea469a4551436034440.json";
-var urlAK = "https://feeds.datafeedwatch.com/95958/3a4f7dba63e51e01ff8ad165f123a825cf30f99b.json";
-var urlALKP = "https://feeds.datafeedwatch.com/95958/c75c33c5369da362ae3e6fafb56ecd0b0ef78319.json";
 
-const urlSite = window.location.href.split("/")[2];
-let site = "";
-
+const urlPrueba = "https://www.ktronix.com/nuestra-compania/tiendas/c/tiendas";
+const urlSite = urlPrueba.split("/")[2];
+/* const urlSite = window.location.href.split("/")[2]; */
 const formatoHora = `${horas}:${minutos}`;
-console.log(formatoHora);
+
 const fechaComoCadena = fecha;
 const dias = [
     'domingo',
@@ -33,9 +30,36 @@ const titleServ = document.querySelector("#title-serv");
 const btn_tiendas = document.querySelector("#all-tiendas");
 const contInput = document.querySelector("#cont-input");
 
+var urlKT = "https://feeds.datafeedwatch.com/95958/fb2f5eb90322be8f5cb1aea469a4551436034440.json";
+var urlAK = "https://feeds.datafeedwatch.com/95958/3a4f7dba63e51e01ff8ad165f123a825cf30f99b.json";
+var urlALKP = "https://feeds.datafeedwatch.com/95958/c75c33c5369da362ae3e6fafb56ecd0b0ef78319.json";
+var textoIngresado = "";
+
+let opSelect;
+
+let urlAPI;
+switch (urlSite) {
+    case "www.alkosto.com":
+        urlAPI = urlAK
+        site = "Tiendas Alkosto";
+        break;
+    case "www.ktronix.com":
+        urlAPI = urlKT
+        site = "Tiendas Ktronix";
+        break;
+    case "www.alkomprar.com":
+        urlAPI = urlALKP
+        site = "Tiendas Alkomprar";
+        break;
+
+    default:
+        break;
+}
+
+
+
 let globalData = {};
 
-var textoIngresado = "";
 
 
 const numeroDia = new Date(fechaComoCadena).getDay();
@@ -68,10 +92,10 @@ for (let index = numeroDia; index < dias.length; index++) {
 }
 
 function allTiendas() {
-    const resp = fetch(`${urlKT}`)
+    const resp = fetch(`${urlAPI}`)
         .then(response => response.json())
         .then(data => infoTiendas(data));
-    site = "Tiendas Ktronix";
+
     btn_tiendas.classList.add("hidden");
     buscador.setAttribute("placeholder", "Ingresa el nombre de tu municipio");
     buscador.value = "";
@@ -81,94 +105,163 @@ function allTiendas() {
 
 const infoTiendas = data => {
     globalData["data"] = data.products;
-    let infoKT = globalData["data"];
+    let info = globalData["data"];
     listaCoincidencias.innerHTML = "";
     content.innerHTML = "";
     resultSearch.innerHTML = "";
-    let info = data.products;
     let filtroTienda = info.filter(element => element.tienda == site);
+    const orderTiendas = filtroTienda.sort((a, b) =>
+        a.nombre_tienda.localeCompare(b.nombre_tienda)
+    );
     buscador.setAttribute("placeholder", "Ingresa el nombre de tu municipio");
-    console.log(filtroTienda);
-    let mapTiendas = filtroTienda.map((t, id) => {
+    let mapTiendas = orderTiendas.map((t, id) => {
         let idTienda = id;
         let direccion = t.dir_tienda;
         let mapsUrl = t.url_llegar;
         let urlTienda = t.url_tienda;
-        console.log(t);
         let horarioDia = "";
+        horLunes = "";
+        t.ap_lun == "Cerrado" && t.cie_lun == "Cerrado" ? horLunes = "Cerrado" : horLunes = `${t.ap_lun.substr(0, 5)} a.m. - ${t.cie_lun.substr(0, 2) - 12}${t.cie_lun.substr(2, 3)} p.m.`;
+        horMartes = "";
+        t.ap_mar == "Cerrado" && t.cie_mar == "Cerrado" ? horMartes = "Cerrado" : horMartes = `${t.ap_mar.substr(0, 5)} a.m. - ${t.cie_mar.substr(0, 2) - 12}${t.cie_mar.substr(2, 3)} p.m.`;
+        horMie = "";
+        t.ap_mie == "Cerrado" && t.cie_mie == "Cerrado" ? horMie = "Cerrado" : horMie = `${t.ap_mie.substr(0, 5)} a.m. - ${t.cie_mie.substr(0, 2) - 12}${t.cie_mie.substr(2, 3)} p.m.`;
+        horJueves = "";
+        t.ap_jue == "Cerrado" && t.cie_jue == "Cerrado" ? horJueves = "Cerrado" : horJueves = `${t.ap_jue.substr(0, 5)} a.m. - ${t.cie_jue.substr(0, 2) - 12}${t.cie_jue.substr(2, 3)} p.m.`;
+        horViernes = "";
+        t.ap_vie == "Cerrado" && t.cie_vie == "Cerrado" ? horViernes = "Cerrado" : horViernes = `${t.ap_vie.substr(0, 5)} a.m. - ${t.cie_vie.substr(0, 2) - 12}${t.cie_vie.substr(2, 3)} p.m.`;
+        horSab = "";
+        t.ap_sab == "Cerrado" && t.cie_sab == "Cerrado" ? horSab = "Cerrado" : horSab = `${t.ap_sab.substr(0, 5)} a.m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p.m.`;
+        horDom = "";
+        t.ap_dom == "Cerrado" && t.cie_dom == "Cerrado" ? horDom = "Cerrado" : horDom = `${t.ap_dom.substr(0, 5)} a.m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p.m.`;
+
         switch (numeroDia) {
             case 1:
-                if (t.ap_lun != "Cerrado") {
+                if (t.ap_lun != "Cerrado" || t.cie_lun != "Cerrado") {
+
                     var hora_apertura = t.ap_lun.substr(0, 5);
                     var aj_hora_cierre = t.cie_lun.substr(0, 2) - 12;
                     var aj_hora_cierre2 = t.cie_lun.substr(2, 3);
                     var hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                    var horTienda = "";
+
                     horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                    
+
                 } else {
-                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> Esta tienda se encuentra cerrada por el día de hoy</p>`;
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
                 }
                 break;
             case 2:
-                hora_apertura = t.ap_mar.substr(0, 5);
-                aj_hora_cierre = t.cie_mar.substr(0, 2) - 12;
-                aj_hora_cierre2 = t.cie_mar.substr(2, 3);
-                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                console.log("Martes");
+                if (t.ap_mar != "Cerrado" || t.ap_mar != "Cerrado") {
+
+                    hora_apertura = t.ap_mar.substr(0, 5);
+                    aj_hora_cierre = t.cie_mar.substr(0, 2) - 12;
+                    aj_hora_cierre2 = t.cie_mar.substr(2, 3);
+                    hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                    horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+
+                } else {
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+                }
+
                 break;
             case 3:
-                hora_apertura = t.ap_mie.substr(0, 5);
-                aj_hora_cierre = t.cie_mie.substr(0, 2) - 12;
-                aj_hora_cierre2 = t.cie_mie.substr(2, 3);
-                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                console.log("Miercoles");
+                if (t.ap_mie != "Cerrado" || t.cie_mie != "Cerrado") {
+
+                    hora_apertura = t.ap_mie.substr(0, 5);
+                    aj_hora_cierre = t.cie_mie.substr(0, 2) - 12;
+                    aj_hora_cierre2 = t.cie_mie.substr(2, 3);
+                    hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                    txtBadge = "";
+                    horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
+            ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+
+                } else {
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+                }
+
                 break;
             case 4:
-                hora_apertura = t.ap_jue.substr(0, 5);
-                aj_hora_cierre = t.cie_jue.substr(0, 2) - 12;
-                aj_hora_cierre2 = t.cie_jue.substr(2, 3);
-                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                console.log("Jueves");
+                if (t.ap_jue != "Cerrado" || t.cie_jue != "Cerrado") {
+
+                    hora_apertura = t.ap_jue.substr(0, 5);
+                    aj_hora_cierre = t.cie_jue.substr(0, 2) - 12;
+                    aj_hora_cierre2 = t.cie_jue.substr(2, 3);
+                    hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                    txtBadge = "";
+                    horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
+            ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                    console.log("Jueves");
+                } else {
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+                }
                 break;
             case 5:
-                hora_apertura = t.ap_vie.substr(0, 5);
-                aj_hora_cierre = t.cie_vie.substr(0, 2) - 12;
-                aj_hora_cierre2 = t.cie_vie.substr(2, 3);
-                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                console.log("Viernes");
-                break;
-            case 6:
-                hora_apertura = t.ap_sab.substr(0, 5);
-                aj_hora_cierre = t.cie_sab.substr(0, 2) - 12;
-                aj_hora_cierre2 = t.cie_sab.substr(2, 3);
-                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                console.log("Sabado");
-                break;
-            case 0:
-                hora_apertura = t.ap_dom.substr(0, 5);
-                aj_hora_cierre = t.cie_dom.substr(0, 2) - 12;
-                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
-                console.log("Domingo");
-                break;
+                if (t.ap_vie != "Cerrado" || t.cie_vie != "Cerrado") {
 
-            default:
-                break;
+                    hora_apertura = t.ap_vie.substr(0, 5);
+                    aj_hora_cierre = t.cie_vie.substr(0, 2) - 12;
+                    aj_hora_cierre2 = t.cie_vie.substr(2, 3);
+                    hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                    txtBadge = "";
+                    horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
+            ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                    console.log("Viernes");
+                    break;
+                } else {
+                    horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+                }
+                case 6:
+                    if (t.ap_sab != "Cerrado" || t.cie_sab != "Cerrado") {
+
+                        hora_apertura = t.ap_sab.substr(0, 5);
+                        aj_hora_cierre = t.cie_sab.substr(0, 2) - 12;
+                        aj_hora_cierre2 = t.cie_sab.substr(2, 3);
+                        hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                        horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
+            ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
+                        horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                        console.log("Sabado");
+                    } else {
+                        horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+                    }
+                    break;
+                case 0:
+                    if (t.ap_dom != "Cerrado" || t.cie_dom != "Cerrado") {
+
+                        hora_apertura = t.ap_dom.substr(0, 5);
+                        aj_hora_cierre = t.cie_dom.substr(0, 2) - 12;
+                        aj_hora_cierre2 = t.cie_dom.substr(2, 3);
+                        hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                        horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
+            ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
+                        horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                        console.log("Domingo");
+                    } else {
+                        horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+                    }
+                    break;
+
+                default:
+                    break;
         }
-        let titleTienda = `<h2 class="card-subtitle">${t.nombre_tienda}
-         <span class="badge bg-primary">Abierto</span></h2>`
 
         return `
                         <div class="col-sm-6 col-md-4">
                         <div class="card">
                         <div class="card-header">
-                        ${titleTienda}
+                        ${horTienda}
                         </div>
                         <div class="card-body">
                         <div class="cont-info-card">
@@ -178,13 +271,13 @@ const infoTiendas = data => {
                         </div>
                         <div class="collapse" id="horariosAcordion${idTienda}">
                         <ul class="list-horario">
-                        <li>Lunes: de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m. </li>
-                        <li>Martes: de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m. </li>
-                        <li>Miércoles: de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m. </li>
-                        <li>Jueves: de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m. </li>
-                        <li>Viernes: de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m. </li>
-                        <li>Sábado: de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m. </li>
-                        <li>Domingo: de {horaOpenDom} a.m. - {horaFormato1Dom}{horaFormato2Dom} p.m.</li>
+                        <li>Lunes: ${horLunes} </li>
+                        <li>Martes: ${t.ap_mar.substr(0, 5)} a.m. - ${t.cie_mar.substr(0, 2) - 12}${t.cie_mar.substr(2, 3)} p.m.</li>
+                        <li>Miércoles: ${t.ap_mie.substr(0, 5)} a.m. - ${t.cie_mie.substr(0, 2) - 12}${t.cie_mie.substr(2, 3)} p.m.</li>
+                        <li>Jueves: ${t.ap_jue.substr(0, 5)} a.m. - ${t.cie_jue.substr(0, 2) - 12}${t.cie_jue.substr(2, 3)} p.m.</li>
+                        <li>Viernes: ${t.ap_vie.substr(0, 5)} a.m. - ${t.cie_vie.substr(0, 2) - 12}${t.cie_vie.substr(2, 3)} p.m.</li>
+                        <li>Sábado: ${t.ap_sab.substr(0, 5)} a.m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p.m.</li>
+                        <li>Domingo: ${t.ap_dom.substr(0, 5)} a.m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p.m.</li>
                         </ul>
                         </div>
                         </div>
@@ -205,6 +298,17 @@ const infoTiendas = data => {
                         </div>
                         `;
     }).join("");
+    document.addEventListener('click', function (event) {
+        if (!event.target.classList.contains('accordion-button')) {
+            var collapses = document.querySelectorAll('.collapse.show');
+            collapses.forEach(function (collapse) {
+                var bootstrapCollapse = new bootstrap.Collapse(collapse, {
+                    toggle: false
+                });
+                bootstrapCollapse.hide();
+            });
+        }
+    });
     content.innerHTML = content.innerHTML + mapTiendas;
 }
 
@@ -212,21 +316,20 @@ const infoTiendas = data => {
 
 const buscarResultados = async searchText => {
 
-    let urlJSON = `${urlAPI}`;
-    const resp = await fetch(`${urlJSON}`);
-
-    const resultados = await resp.json();
-    let compararResultado = resultados.filter(
+    consulta = globalData["data"];
+    let compararResultado = consulta.filter(
         resultado => {
             const newResult = new RegExp(`^${limpiarTexto(searchText)}`, 'gi');
+
             textoIngresado = searchText;
-            let ciud = resultado.value;
+
+            let ciud = resultado.ciudad_tienda;
+
             let ciudad = limpiarTexto(ciud);
-            let depto = resultado.dep;
-            let departamento = limpiarTexto(depto);
-            let location = `${ciudad}, ${departamento}`;
-            return location;
-        });
+
+            return ciudad;
+        }
+    );
 
     if (searchText.length === 0) {
         compararResultado = [];
@@ -237,7 +340,6 @@ const buscarResultados = async searchText => {
     }
 
 }
-
 const printRes = compararResultado => {
     listaCoincidencias.innerHTML = "";
     content.innerHTML = "";
@@ -253,114 +355,39 @@ const printRes = compararResultado => {
             buscador.setAttribute("placeholder", "Ingresa tu municipio o departamento");
             buscador.focus();
         }, 4000);
+        let ciudadesEx = new Set();
         const opciones = compararResultado.map(card => {
+
+            let ciudad = card.ciudad_tienda;
             let text = buscador.value;
             let textLimpio = limpiarTexto(text);
-            let nameDepto = card.dep;
-            let nombreDepto = limpiarTexto(nameDepto);
-            let nombreMunicipio = card.value;
-            let nombreMunLimpio = limpiarTexto(nombreMunicipio);
-            let location = `${nombreMunLimpio}, ${nombreDepto}`
-            if (location.includes(textLimpio)) {
+            let ciudLimpio = limpiarTexto(ciudad);
+
+            if (ciudLimpio.includes(textLimpio) && !ciudadesEx.has(ciudLimpio)) {
+
                 buscador.style.border = "";
                 listaCoincidencias.style.display = "block";
                 listaCoincidencias.innerHTML +=
-                    `<span id="${card.value}" class="selectOp"><div class="dropdown-item">
+                    `<span id="${ciudLimpio}" class="selectOp"><div class="dropdown-item">
             <div class="panel panel-default">
             <div class="panel-heading">
-            <p><i class="alk-icon-pin-generico"></i> ${card.label}, ${card.dep}</p>
+            <p><i class="alk-icon-pin-generico"></i> ${ciudad}</p>
             </div>
             </div>
             </div></span>`;
-                lists = listaCoincidencias.querySelectorAll("span");
-                for (let i = 0; i < lists.length; i++) {
-                    lists[i].addEventListener('click', selectCard);
-
-                    function selectCard() {
-                        contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
-                        let opSelect = lists[i].id;
-                        listaCoincidencias.style.display = "none";
-                        const cardView = compararResultado.map(i => {
-                            let tiendas = i.info_tienda;
-                            let ciudad = i.value;
-                            let ciudadCorto = i.label;
-                            let depto = i.dep;
-                            let descript = i.desc;
-                            if (opSelect == ciudad) {
-                                btn_tiendas.classList.remove("hidden");
-                                carrusel.style.display = "block";
-                                buscador.setAttribute("placeholder", opSelect + ", " + depto);
-                                resultSearch.innerHTML = `<h4>El resultado para tu busqueda en "${opSelect}" es:</h4>`;
-
-                                buscador.value = "";
-                                if (descript == "tienda") {
-                                    let infoTienda = tiendas.map(t => {
-                                        let idTienda = t.id_tienda;
-                                        let direccion = t.direccion;
-                                        let horaOpen = t.hora_apertura;
-                                        let horaOpenDom = t.hora_apertura_dom;
-                                        let horaCloseDom = t.hora_cierre_dom;
-                                        let horaClose = t.hora_cierre;
-                                        let horaFormato1 = horaClose.substr(0, 2) - 12;
-                                        let horaFormato2 = horaClose.substr(2, 5);
-                                        let horaFormato1Dom = horaCloseDom.substr(0, 2) - 12;
-                                        let horaFormato2Dom = horaClose.substr(2, 5);
-                                        let wazeUrl = t.como_llegar_waze;
-                                        let mapsUrl = t.como_llegar;
-                                        let urlTienda = t.url_tienda;
-                                        let nameTienda = t.name_tienda;
-                                        let horario = numeroDia == 6 ? `<p class="horario abierto"> <i class="alk-icon-clock"></i> hoy de {horaOpenDom} a.m. - {horaFormato1Dom}{horaFormato2Dom} p.m.</p>` : `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de {horaOpen} a.m. - {horaFormato1}{horaFormato2} p.m.</p>`;
-                                        let horTienda = horaOpen <= formatoHora && horaClose >= formatoHora ? `<h2 class="card-subtitle">
-                                        ${t.name_tienda} <span class="badge bg-primary">Abierto</span>
-                                        </h2>` : `<h2 class="card-subtitle">
-                                        ${t.name_tienda} <span class="badge bg-danger">Cerrado</span>
-                                        </h2>`;
-                                        let horarioDiasHabiles = `Lun a Sab: {horaOpen} - {horaClose}`;
-                                        let horarioFestivos = `Dom y Fes: {horaOpenDom} - {horaCloseDom}`;
-                                        let retorno = {
-                                            ciudad,
-                                            depto,
-                                            nameTienda,
-                                            horaFormato1,
-                                            horaFormato2,
-                                            horaFormato1Dom,
-                                            horaFormato2Dom,
-                                            horaOpenDom,
-                                            horaOpen,
-                                            horario,
-                                            urlTienda,
-                                            horTienda,
-                                            idTienda,
-                                            direccion,
-                                            mapsUrl
-                                        }
-
-                                        return retorno
-                                    });
-                                    pintarCards(infoTienda);
-                                } else if (descript == "envio" || descript == undefined) {
-                                    let desc = i.desc;
-                                    let depto = i.dep;
-                                    let diasEntrega = "";
-                                    let tiempo_entrega = i.tiempo_entrega;
-                                    tiempo_entrega == 1 ? diasEntrega = `<p class="txt-blue">Tiempo estimado de entrega: ${tiempo_entrega} día hábil.</p>` : diasEntrega = `<p class="txt-blue">Tiempo estimado de entrega: ${tiempo_entrega} días hábiles.</p>`;
-                                    let horarioEntrega = i.horario_entrega;
-                                    buscador.setAttribute("placeholder", opSelect + ", " + depto);
-
-                                    retorno = {
-                                        ciudadCorto,
-                                        depto,
-                                        diasEntrega,
-                                        desc,
-                                        horarioEntrega
-                                    }
-                                    pintarEnvio(retorno);
-                                }
-                            }
-                        });
-                    }
-                }
+                ciudadesEx.add(ciudLimpio);
             }
+
+            lists = listaCoincidencias.querySelectorAll("span");
+            let filterCiudad;
+            for (let i = 0; i < lists.length; i++) {
+                opSelect = lists[i].id;
+                lists[i].addEventListener('click', selectCard);
+
+
+            }
+
+
         }).join('');
     }
     if (lists.length === 0) {
@@ -386,6 +413,101 @@ const printRes = compararResultado => {
     }
 }
 
+function selectCard() {
+    contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
+    listaCoincidencias.style.display = "none";
+    cardSeleccionada(opSelect);
+}
+const cardSeleccionada = sel => {
+    filterCiudad = globalData["data"].filter((i) => {
+        return limpiarTexto(i.ciudad_tienda) == sel;
+    })
+    cardView(filterCiudad);
+    return filterCiudad;
+}
+
+const cardView = card => {
+    console.log(card);
+    card.map(i => {
+        console.log(i);
+        /* let tiendas = i.info_tienda;
+        let ciudad = i.value;
+        let ciudadCorto = i.label;
+        let depto = i.dep;
+        let descript = i.desc;
+        if (opSelect == ciudad) {
+            btn_tiendas.classList.remove("hidden");
+            carrusel.style.display = "block";
+            buscador.setAttribute("placeholder", opSelect + ", " + depto);
+            resultSearch.innerHTML = `<h4>El resultado para tu busqueda en "${opSelect}" es:</h4>`;
+
+            buscador.value = "";
+            if (descript == "tienda") {
+                let infoTienda = tiendas.map(t => {
+                    let idTienda = t.id_tienda;
+                    let direccion = t.direccion;
+                    let hora_apertura = t.hora_apertura;
+                    let hora_aperturaDom = t.hora_apertura_dom;
+                    let horaCloseDom = t.hora_cierre_dom;
+                    let horaClose = t.hora_cierre;
+                    let horaFormato1 = horaClose.substr(0, 2) - 12;
+                    let horaFormato2 = horaClose.substr(2, 5);
+                    let horaFormato1Dom = horaCloseDom.substr(0, 2) - 12;
+                    let horaFormato2Dom = horaClose.substr(2, 5);
+                    let wazeUrl = t.como_llegar_waze;
+                    let mapsUrl = t.como_llegar;
+                    let urlTienda = t.url_tienda;
+                    let nameTienda = t.nombre_tienda;
+                    let horario = numeroDia == 6 ? `<p class="horario abierto"> <i class="alk-icon-clock"></i> hoy de {hora_aperturaDom} a.m. - {horaFormato1Dom}{horaFormato2Dom} p.m.</p>` : `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de {hora_apertura} a.m. - {horaFormato1}{horaFormato2} p.m.</p>`;
+                    let horTienda = hora_apertura <= formatoHora && horaClose >= formatoHora ? `<h2 class="card-subtitle">
+                        ${t.nombre_tienda} <span class="badge bg-primary">Abierto</span>
+                        </h2>` : `<h2 class="card-subtitle">
+                        ${t.nombre_tienda} <span class="badge bg-danger">Cerrado</span>
+                        </h2>`;
+                    let horarioDiasHabiles = `Lun a Sab: {hora_apertura} - {horaClose}`;
+                    let horarioFestivos = `Dom y Fes: {hora_aperturaDom} - {horaCloseDom}`;
+                    let retorno = {
+                        ciudad,
+                        depto,
+                        nameTienda,
+                        horaFormato1,
+                        horaFormato2,
+                        horaFormato1Dom,
+                        horaFormato2Dom,
+                        hora_aperturaDom,
+                        hora_apertura,
+                        horario,
+                        urlTienda,
+                        horTienda,
+                        idTienda,
+                        direccion,
+                        mapsUrl
+                    }
+
+                    return retorno
+                });
+                pintarCards(infoTienda);
+            } else if (descript == "envio" || descript == undefined) {
+                let desc = i.desc;
+                let depto = i.dep;
+                let diasEntrega = "";
+                let tiempo_entrega = i.tiempo_entrega;
+                tiempo_entrega == 1 ? diasEntrega = `<p class="txt-blue">Tiempo estimado de entrega: ${tiempo_entrega} día hábil.</p>` : diasEntrega = `<p class="txt-blue">Tiempo estimado de entrega: ${tiempo_entrega} días hábiles.</p>`;
+                let horarioEntrega = i.horario_entrega;
+                buscador.setAttribute("placeholder", opSelect + ", " + depto);
+
+                retorno = {
+                    ciudadCorto,
+                    depto,
+                    diasEntrega,
+                    desc,
+                    horarioEntrega
+                }
+                pintarEnvio(retorno);
+            }
+        } */
+    });
+}
 
 function pintarCards(retorno) {
     let printCard = retorno.map((c) => renderCard(c));
@@ -409,13 +531,13 @@ ${c.horario}
 </div>
 <div class="collapse" id="horariosAcordion${c.idTienda}">
 <ul class="list-horario">
-<li>Lunes: de ${c.horaOpen} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
-<li>Martes: de ${c.horaOpen} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
-<li>Miércoles: de ${c.horaOpen} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
-<li>Jueves: de ${c.horaOpen} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
-<li>Viernes: de ${c.horaOpen} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
-<li>Sábado: de ${c.horaOpen} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
-<li>Domingo: de ${c.horaOpenDom} a.m. - ${c.horaFormato1Dom}${c.horaFormato2Dom} p.m.</li>
+<li>Lunes: ${c.hora_apertura} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
+<li>Martes: ${c.hora_apertura} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
+<li>Miércoles: ${c.hora_apertura} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
+<li>Jueves: ${c.hora_apertura} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
+<li>Viernes: ${c.hora_apertura} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
+<li>Sábado: ${c.hora_apertura} a.m. - ${c.horaFormato1}${c.horaFormato2} p.m. </li>
+<li>Domingo: ${c.hora_aperturaDom} a.m. - ${c.horaFormato1Dom}${c.horaFormato2Dom} p.m.</li>
 </ul>
 </div>
 </div>

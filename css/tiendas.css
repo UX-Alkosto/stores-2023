@@ -310,7 +310,7 @@ h2.card-subtitle {
 }
 
 i.alk-icon-nuestras-tiendas {
-    color: #eb5b24;
+    color: var(--primary-color1);
 }
 
 i.alk-icon-pin-generico {

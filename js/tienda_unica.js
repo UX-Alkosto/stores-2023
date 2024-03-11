@@ -77,7 +77,54 @@ function infoStore() {
         });
 }
 const printInfo = (i) => {
+    let hor1;
+    let hor2;
+    let hor3;
+
     console.log(i);
+
+    i.dias_hor_1 !== "" ? hor1 = `<div class="c-horario">
+    <p class="days-hor">${i.dias_hor_1}</p>
+    <div class="cont-hours">
+    <span class="info-hor">
+    <i class="alk-icon-dia icons-store"></i>
+    ${i.hora_ap_hor_1.slice(0, 5)} a.m.
+    </span>
+    <span class="info-hor">
+    <img class="moon img img-responsive" src="../img/luna.png"/>
+    ${i.hora_cie_hor_1.slice(0, 5)} p.m.
+    </span>
+    </div>
+    </div>` : hor1 = "";
+
+    i.dias_hor_2 !== "" ? hor2 = `<div class="c-horario">
+    <p class="days-hor">${i.dias_hor_2}</p>
+    <div class="cont-hours">
+    <span class="info-hor">
+    <i class="alk-icon-dia icons-store"></i>
+    ${i.hora_ap_hor_2.slice(0, 5)} a.m.
+    </span>
+    <span class="info-hor">
+    <img class="moon img img-responsive" src="../img/luna.png"/>
+    ${i.hora_cie_hor_2.slice(0, 5)} p.m.
+    </span>
+    </div>
+    </div>` : hor2 = "";
+
+    i.dias_hor_3 !== "" ? hor3 = `<div class="c-horario">
+    <p class="days-hor">${i.dias_hor_3}</p>
+    <div class="cont-hours">
+    <span class="info-hor">
+    <i class="alk-icon-dia icons-store"></i>
+    ${i.hora_ap_hor_3.slice(0, 5)} a.m.
+    </span>
+    <span class="info-hor">
+    <img class="moon img img-responsive" src="../img/luna.png"/>
+    ${i.hora_cie_hor_3.slice(0, 5)} p.m.
+    </span>
+    </div>
+    </div>` : hor3 = "";
+
     const store =
         `
     <div class="contenedor_tienda_detalle">
@@ -88,10 +135,17 @@ const printInfo = (i) => {
     <div class="info_detalle">
     <h2>${i.nombre_tienda}</h2>
     <span class="direc">${i.dir_tienda}</span>
-    <p class="apertura verde">Abierto, cierra a las 9:00 p.&nbsp;m.</p>
     <span class="tit_horario"><i class="alk-icon-clock"></i> Horarios</span>
-    <div class="horarios_detalle">
-    <p><strong>Lun a Vie</strong> <br> 7:00 a.m a 9:00 p.m</p><p><strong>Dom y Fes</strong> <br> 7:00 a.m a 9:00 p.m</p>
+    <p class="apertura verde">Abierto, cierra a las 9:00 p.&nbsp;m.</p>
+    <div class="cont-hors">
+    ${hor1}
+    ${hor2}
+    ${hor3}
+    </div>
+    <div class="cont-alert">
+    <div class="alert alert-info">
+    <p>${i.msj_alert}. Te invitamos a seguir comprando en <a class="alert-link" href="/">Alkomprar.com</a></p>
+    </div>
     </div>
     <div class="links_detalle">
     <span><a target="_blank" rel="noopener" title="Como llegar" href="${i.url_llegar}"><i class="alk-icon-arrive"></i> Como llegar</a></span>

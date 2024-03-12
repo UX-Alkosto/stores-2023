@@ -4,7 +4,7 @@ const horaMin = hora.substr(0, 5);
 const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 
-const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/bucaramanga/barrio-soto-mayor";
+const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/armenia/unicentro";
 const urlSite = urlPrueba.split("/")[2];
 console.log(urlSite);
 /* const urlSite = window.location.href.split("/")[2]; */
@@ -73,16 +73,28 @@ function infoStore() {
         .then(data => {
             globalData["info-all"] = data.products;
             let info = globalData["info-all"].filter(item => item.tienda != null && item.url_tienda == urlPrueba);
+
             printInfo(info[0])
+            let otStores = globalData["info-all"].filter(item => item.tienda != null && item.ciudad_tienda == info[0].ciudad_tienda && item.nombre_tienda != info[0].nombre_tienda);
+            if (otStores.length >= 1) {
+                otherStores(otStores);
+                return;
+            }
         });
 }
 const printInfo = (i) => {
     let hor1;
     let hor2;
     let hor3;
+    let msjAlert;
+    let msjVig = new Date(`${i.vig_msj} 23:59:00 GMT-0500`);
+    console.log(msjVig, "__", fecha);
 
-    console.log(i);
-
+    fecha <= msjVig ? msjAlert = `<div class="cont-alert">
+    <div class="alert alert-info">
+    <p>${i.msj_alert}. Te invitamos a seguir comprando en <a class="alert-link" href="/">Alkomprar.com</a></p>
+    </div>
+    </div>` : msjAlert = "";
     i.dias_hor_1 !== "" ? hor1 = `<div class="c-horario">
     <p class="days-hor">${i.dias_hor_1}</p>
     <div class="cont-hours">
@@ -142,11 +154,7 @@ const printInfo = (i) => {
     ${hor2}
     ${hor3}
     </div>
-    <div class="cont-alert">
-    <div class="alert alert-info">
-    <p>${i.msj_alert}. Te invitamos a seguir comprando en <a class="alert-link" href="/">Alkomprar.com</a></p>
-    </div>
-    </div>
+    ${msjAlert}
     <div class="links_detalle">
     <span><a target="_blank" rel="noopener" title="Como llegar" href="${i.url_llegar}"><i class="alk-icon-arrive"></i> Como llegar</a></span>
     <span><a target="_blank" rel="noopener" title="Ver mapa" href="${i.url_maps}"><i class="alk-icon-ver-mapa"></i> Ver mapa y horarios</a></span>
@@ -156,5 +164,9 @@ const printInfo = (i) => {
     </div>
     `
     content.innerHTML = store;
+}
+
+const otherStores = (i) => {
+    console.log(i);
 }
 infoStore();

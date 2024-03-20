@@ -1,43 +1,22 @@
-.horarios_detalle {
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-}
-
-.cont-hor {
-
-    display: flex;
-    flex-direction: column;
-    margin: 0 1rem 1rem 0;
-    align-items: center;
-    text-align: center;
-    border-radius: 4px;
-    -webkit-box-shadow: 0 3px 6px #c5c5c529;
-    box-shadow: 0 3px 6px #c5c5c529;
-
-    border: 1px solid var(--disabled-gray);
-    padding: 0.5rem 1rem;
-    min-width: 7rem;
-}
-
-.c-horario {
-    padding: 1rem;
-    margin: 0.5rem 0.5rem 0.5rem 0rem;
-    border: 1px solid lightgray;
-    border-radius: 4px;
-}
-
-.cont-hors {
+p {
     font-size: 16px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin-bottom: 1rem;
 }
-.days-hor{
+
+
+.cont-info {
+    padding-top: 5rem;
+}
+
+
+.days-hor {
     font-weight: bold;
 }
+
+.img-store {
+    aspect-ratio: 16/9;
+    border-radius: 4px;
+}
+
 span.info-hor {
     display: flex;
     align-items: center;
@@ -51,19 +30,64 @@ span.info-hor {
     width: 100%;
 }
 
+ul.lists-hor {
+    padding: 0;
+    width: fit-content;
+}
+
+li.element-hor {
+    list-style: none;
+    color: var(--stores-gray-4);
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.element-hor:nth-child(1) {
+    font-weight: bold;
+    color: var(--stores-black);
+    background-color: #e5edf5;
+}
+
+.mb-2 {
+    margin-bottom: 8px;
+}
+
+.mb-3 {
+    margin-bottom: 12px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
 
 .moon {
     width: 14px;
 }
 
-
-.tit_horario{
-    margin: 1rem 0rem;
+.name-store {
+    margin: 0px 0px 16px 0px;
 }
 
+.open {
+    color: #004797;
+    font-weight: bold;
+}
+
+.close-txt {
+    color: #DD171B;
+    font-weight: bold;
+}
 
 span.txt-day {
     font-weight: bold;
+}
+
+@media(max-width:992px){
+    .info-gen{
+        padding-bottom: 16px;
+        border-bottom: 1px solid #D5D5D5;
+    }
 }
 
 .container *,
@@ -117,13 +141,6 @@ body {
     }
 }
 
-.rojo {
-    color: var(--stores-red)
-}
-
-.verde {
-    color: var(--stores-green)
-}
 
 .main__inner-wrapper {
     overflow: visible !important
@@ -194,10 +211,6 @@ body {
     color: var(--stores-gray-5)
 }
 
-.detalle_tienda .apertura {
-    font-size: 14px;
-
-}
 
 .detalle_tienda .direc {
     font-size: 18px;
@@ -205,7 +218,7 @@ body {
     margin-bottom: 5px
 }
 
-.detalle_tienda .tit_horario {
+.tit_horario {
     align-items: center;
     color: var(--stores-brand-secondary);
     font-size: 18px;
@@ -218,10 +231,10 @@ body {
     color: var(--stores-white)
 }
 
-.detalle_tienda .tit_horario i {
+.tit_horario i {
     color: var(--stores-brand-secondary);
     font-size: 20px;
-    margin-right: 5px
+    margin-right: 8px
 }
 
 .horarios_detalle {
@@ -473,23 +486,6 @@ body {
         width: 100%
     }
 
-    .info_detalle {
-        padding: 30px !important
-    }
-
-    .info_detalle h2 {
-        color: var(--stores-gray-5)
-    }
-
-    .links_detalle {
-        margin: 10px 0 0
-    }
-
-    .horarios_detalle p {
-        font-size: 14px;
-        line-height: 24px
-    }
-
     .otras_tiendas {
         margin-top: 40px
     }
@@ -512,28 +508,12 @@ body {
         padding-left: 10px
     }
 
-    .info_detalle {
-        padding: 20px !important
-    }
-
     .tit_otras {
         margin: 0 0 0 15px
     }
 }
 
 @media only screen and (max-width:414px) {
-    .store p.direccionTienda {
-        margin: 10px 0 0;
-        line-height: 20px
-    }
-
-    .container {
-        margin: 0
-    }
-
-    .info_detalle {
-        padding: 20px !important
-    }
 
     .contenedor_tienda_detalle img {
         width: 100% !important
@@ -563,10 +543,6 @@ body {
         border-left: none
     }
 
-    .detalle_tienda .tit_horario {
-        margin-top: 20px;
-    }
-
     .otras_tiendas {
         margin-top: 30px
     }
@@ -577,10 +553,6 @@ body {
 }
 
 @media only screen and (max-width:320px) {
-    .info_detalle {
-        padding: 10px !important
-    }
-
     .tit_otras {
         border-bottom: none
     }

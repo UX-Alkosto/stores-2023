@@ -3,12 +3,13 @@ const hora = fecha.toLocaleTimeString();
 const horaMin = hora.substr(0, 5);
 const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
+const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
 const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/armenia/unicentro";
 const urlSite = urlPrueba.split("/")[2];
-console.log(urlSite);
+
 /* const urlSite = window.location.href.split("/")[2]; */
-const formatoHora = `${horas}:${minutos}`;
+const formatoHora = `${horas}:${minutos}:${segundos}`;
 
 const fechaComoCadena = fecha;
 const dias = [
@@ -82,84 +83,106 @@ function infoStore() {
             }
         });
 }
+
 const printInfo = (i) => {
-    let hor1;
-    let hor2;
-    let hor3;
+    const horJSON = {
+        ap_domingo: i.ap_dom,
+        ap_lunes: i.ap_lun,
+        ap_martes: i.ap_mar,
+        ap_miércoles: i.ap_mie,
+        ap_jueves: i.ap_jue,
+        ap_viernes: i.ap_vie,
+        ap_sábado: i.ap_sab,
+        cie_domingo: i.cie_dom,
+        cie_lunes: i.cie_lun,
+        cie_martes: i.cie_mar,
+        cie_miércoles: i.cie_mie,
+        cie_jueves: i.cie_jue,
+        cie_viernes: i.cie_vie,
+        cie_sábado: i.cie_sab,
+    }
+
+    console.log(i);
+
+    console.log(formatoHora);
+    const horOrd = dias.map(dia => {
+        const apertura = horJSON[`ap_${dia}`];
+        const cierre = horJSON[`cie_${dia}`];
+        return {
+            apertura,
+            cierre,
+            dia: dia,
+
+        }
+    })
+    const listHor = [...horOrd.slice(numeroDia), ...horOrd.slice(0, numeroDia)]
+
+    let horario = "";
+    if (listHor[0].apertura == "cerrado" || listHor[0].cierre == "cerrado") {
+        console.log(listHor[1].apertura.substr(0, 5));
+        horario = `<p class="apertura"><span class="close-txt"> cerrado, abre mañana a las ${listHor[1].apertura.substr(1, 4)} a. m. </span></p>`
+    } else if (listHor[0].apertura <= formatoHora && listHor[0].cierre >= formatoHora) {
+        horario = `<p class="apertura">Hoy ${listHor[0].dia}: <br> <span class="open"> abierto, cierra a las ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </span></p>`
+        console.log(listHor[0].cierre.substr(0, 5));
+    } else if (listHor[0].apertura >= formatoHora && listHor[0].cierre >= formatoHora) {
+        horario = `<p class="apertura"><span class="close-txt">Cerrado, abre a las ${listHor[0].apertura.substr(1,4)} a. m. </span></p>`
+        console.log(listHor[0].cierre.substr(0, 5));
+    } else {
+        horario = `<p class="apertura"><span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(1,4)} a. m.</span></p>`
+        console.log(listHor[0].cierre.substr(0, 5));
+    }
+    let listDias = "";
+    listHor.map((h, i) => {
+        let apert = "";
+        let horDia = "";
+        horDia = h.apertura == "cerrado" || h.cierre == "cerrado" ? horDia = `<li class='element-hor'>${h.dia}: cerrado</li>` : horDia = `<li class="element-hor">${h.dia} de: ${h.apertura.substr(1, 4)} a. m. a ${h.cierre.substr(0, 2)-12}${h.cierre.substr(2,3)} p. m.</li>`
+
+        return listDias += horDia;
+    })
+
     let msjAlert;
     let msjVig = new Date(`${i.vig_msj} 23:59:00 GMT-0500`);
-    console.log(msjVig, "__", fecha);
 
     fecha <= msjVig ? msjAlert = `<div class="cont-alert">
     <div class="alert alert-info">
     <p>${i.msj_alert}. Te invitamos a seguir comprando en <a class="alert-link" href="/">Alkomprar.com</a></p>
     </div>
     </div>` : msjAlert = "";
-    i.dias_hor_1 !== "" ? hor1 = `<div class="c-horario">
-    <p class="days-hor">${i.dias_hor_1}</p>
-    <div class="cont-hours">
-    <span class="info-hor">
-    <i class="alk-icon-dia icons-store"></i>
-    ${i.hora_ap_hor_1.slice(0, 5)} a.m.
-    </span>
-    <span class="info-hor">
-    <img class="moon img img-responsive" src="../img/luna.png"/>
-    ${i.hora_cie_hor_1.slice(0, 5)} p.m.
-    </span>
-    </div>
-    </div>` : hor1 = "";
 
-    i.dias_hor_2 !== "" ? hor2 = `<div class="c-horario">
-    <p class="days-hor">${i.dias_hor_2}</p>
-    <div class="cont-hours">
-    <span class="info-hor">
-    <i class="alk-icon-dia icons-store"></i>
-    ${i.hora_ap_hor_2.slice(0, 5)} a.m.
-    </span>
-    <span class="info-hor">
-    <img class="moon img img-responsive" src="../img/luna.png"/>
-    ${i.hora_cie_hor_2.slice(0, 5)} p.m.
-    </span>
-    </div>
-    </div>` : hor2 = "";
-
-    i.dias_hor_3 !== "" ? hor3 = `<div class="c-horario">
-    <p class="days-hor">${i.dias_hor_3}</p>
-    <div class="cont-hours">
-    <span class="info-hor">
-    <i class="alk-icon-dia icons-store"></i>
-    ${i.hora_ap_hor_3.slice(0, 5)} a.m.
-    </span>
-    <span class="info-hor">
-    <img class="moon img img-responsive" src="../img/luna.png"/>
-    ${i.hora_cie_hor_3.slice(0, 5)} p.m.
-    </span>
-    </div>
-    </div>` : hor3 = "";
 
     const store =
         `
-    <div class="contenedor_tienda_detalle">
-    <div class="imagen_tienda">
-    <img src="${i.img_tienda}" alt="${i.nombre_tienda}">
+    <div class="row cont-title">
+    <div class="col-md-12">
+    <h1>${i.ciudad_tienda}</h1>
     </div>
-    <div class="detalle_tienda">
+    </div>
+    <div class="row cont-info">
+    <div class="col-md-5 mb-4">
+    <img src="${i.img_tienda}" class="img img-responsive img-store" width="auto" alt="${i.nombre_tienda}">
+    </div>
+    <div class="col-md-4 mb-4 info-gen">
     <div class="info_detalle">
-    <h2>${i.nombre_tienda}</h2>
-    <span class="direc">${i.dir_tienda}</span>
-    <span class="tit_horario"><i class="alk-icon-clock"></i> Horarios</span>
-    <p class="apertura verde">Abierto, cierra a las 9:00 p.&nbsp;m.</p>
-    <div class="cont-hors">
-    ${hor1}
-    ${hor2}
-    ${hor3}
+    <h2 class="name-store">${i.nombre_tienda}</h2>
+    <p class="direc">${i.dir_tienda}</p>
     </div>
-    ${msjAlert}
+    ${horario}
     <div class="links_detalle">
     <span><a target="_blank" rel="noopener" title="Como llegar" href="${i.url_llegar}"><i class="alk-icon-arrive"></i> Como llegar</a></span>
     <span><a target="_blank" rel="noopener" title="Ver mapa" href="${i.url_maps}"><i class="alk-icon-ver-mapa"></i> Ver mapa y horarios</a></span>
+     </div>
+   </div>
+    <div class="col-md-3 mb-4">
+    <span class="tit_horario mb-2"><i class="alk-icon-clock"></i> Horarios</span>
+   
+   <ul class="lists-hor">
+   ${listDias}
+   </ul> 
     </div>
     </div>
+    <div class="row">
+    <div class="col-md-12">
+    ${msjAlert}
     </div>
     </div>
     `

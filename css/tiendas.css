@@ -179,7 +179,7 @@
     padding: 0px 8px;
     font-size: 16px;
     margin: 0px;
-    color: var(--primary-color2);
+    color: var(--text-color1);
 }
 
 .header-envio {
@@ -267,13 +267,6 @@
         right: 10px;
     }
 
-    .cont-info-card p {
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
     .d-md-flex {
         display: flex;
         align-items: center;
@@ -297,7 +290,9 @@
 }
 
 h2.card-subtitle {
-    color: var(--primary-color2);
+    width: 75%;
+    margin-right: 4px;
+    color: var(--text-color1);
     place-items: center;
     margin-top: 0px;
     margin-bottom: 0px;
@@ -355,11 +350,11 @@ i.alk-icon-pin-generico {
 
 span.badge.bg-primary {
     color: white;
-    background-color: var(--secondary-color2);
+    background-color: #004797;
     padding: 5px 14px;
     font-size: 14px;
     border-radius: 30px;
-    border: 1px solid var(--secondary-color2);
+    border: 1px solid #004797;
     align-self: center;
 }
 

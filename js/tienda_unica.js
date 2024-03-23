@@ -5,7 +5,7 @@ const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
-const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/armenia/unicentro";
+const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/medellin/aventura";
 const urlSite = urlPrueba.split("/")[2];
 
 /* const urlSite = window.location.href.split("/")[2]; */
@@ -102,9 +102,6 @@ const printInfo = (i) => {
         cie_sábado: i.cie_sab,
     }
 
-    console.log(i);
-
-    console.log(formatoHora);
     const horOrd = dias.map(dia => {
         const apertura = horJSON[`ap_${dia}`];
         const cierre = horJSON[`cie_${dia}`];
@@ -119,23 +116,23 @@ const printInfo = (i) => {
 
     let horario = "";
     if (listHor[0].apertura == "cerrado" || listHor[0].cierre == "cerrado") {
-        console.log(listHor[1].apertura.substr(0, 5));
-        horario = `<p class="apertura"><span class="close-txt"> cerrado, abre mañana a las ${listHor[1].apertura.substr(1, 4)} a. m. </span></p>`
+
+        horario = `<p class="apertura"><span class="close-txt"> cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m. </span></p>`
     } else if (listHor[0].apertura <= formatoHora && listHor[0].cierre >= formatoHora) {
         horario = `<p class="apertura">Hoy ${listHor[0].dia}: <br> <span class="open"> abierto, cierra a las ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </span></p>`
-        console.log(listHor[0].cierre.substr(0, 5));
+
     } else if (listHor[0].apertura >= formatoHora && listHor[0].cierre >= formatoHora) {
-        horario = `<p class="apertura"><span class="close-txt">Cerrado, abre a las ${listHor[0].apertura.substr(1,4)} a. m. </span></p>`
-        console.log(listHor[0].cierre.substr(0, 5));
+        horario = `<p class="apertura"><span class="close-txt">Cerrado, abre a las ${listHor[0].apertura.substr(0, 5)} a. m. </span></p>`
+
     } else {
-        horario = `<p class="apertura"><span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(1,4)} a. m.</span></p>`
-        console.log(listHor[0].cierre.substr(0, 5));
+        horario = `<p class="apertura"><span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</span></p>`
+
     }
     let listDias = "";
     listHor.map((h, i) => {
         let apert = "";
         let horDia = "";
-        horDia = h.apertura == "cerrado" || h.cierre == "cerrado" ? horDia = `<li class='element-hor'>${h.dia}: cerrado</li>` : horDia = `<li class="element-hor">${h.dia} de: ${h.apertura.substr(1, 4)} a. m. a ${h.cierre.substr(0, 2)-12}${h.cierre.substr(2,3)} p. m.</li>`
+        horDia = h.apertura == "cerrado" || h.cierre == "cerrado" ? horDia = `<li class='element-hor'>${h.dia}: cerrado</li>` : horDia = `<li class="element-hor">${h.dia} de: ${h.apertura.substr(0, 5)} a. m. a ${h.cierre.substr(0, 2)-12}${h.cierre.substr(2,3)} p. m.</li>`
 
         return listDias += horDia;
     })
@@ -152,18 +149,15 @@ const printInfo = (i) => {
 
     const store =
         `
-    <div class="row cont-title">
-    <div class="col-md-12">
-    <h1>${i.ciudad_tienda}</h1>
-    </div>
-    </div>
+<div class="cont-all">
     <div class="row cont-info">
     <div class="col-md-5 mb-4">
-    <img src="${i.img_tienda}" class="img img-responsive img-store" width="auto" alt="${i.nombre_tienda}">
+    <img loading="lazy" src="${i.img_tienda}" class="img img-responsive img-store" width="800" alt="${i.nombre_tienda}">
     </div>
     <div class="col-md-4 mb-4 info-gen">
     <div class="info_detalle">
-    <h2 class="name-store">${i.nombre_tienda}</h2>
+    <h1 class="name-store">${i.nombre_tienda}</h1>
+    <h2 class="txt-ciudad">${i.ciudad_tienda}</h2>
     <p class="direc">${i.dir_tienda}</p>
     </div>
     ${horario}
@@ -172,14 +166,14 @@ const printInfo = (i) => {
     <span><a target="_blank" rel="noopener" title="Ver mapa" href="${i.url_maps}"><i class="alk-icon-ver-mapa"></i> Ver mapa y horarios</a></span>
      </div>
    </div>
-    <div class="col-md-3 mb-4">
+    <div class="col-md-3 mb-4 cont-horarios">
     <span class="tit_horario mb-2"><i class="alk-icon-clock"></i> Horarios</span>
-   
    <ul class="lists-hor">
    ${listDias}
    </ul> 
     </div>
     </div>
+</div>
     <div class="row">
     <div class="col-md-12">
     ${msjAlert}
@@ -190,6 +184,94 @@ const printInfo = (i) => {
 }
 
 const otherStores = (i) => {
-    console.log(i);
+    const content = document.querySelector("#other-stores");
+
+    const mapStores = i.map((s, index) => {
+        console.log(s);
+        const horJSON = {
+            ap_domingo: s.ap_dom,
+            ap_lunes: s.ap_lun,
+            ap_martes: s.ap_mar,
+            ap_miércoles: s.ap_mie,
+            ap_jueves: s.ap_jue,
+            ap_viernes: s.ap_vie,
+            ap_sábado: s.ap_sab,
+            cie_domingo: s.cie_dom,
+            cie_lunes: s.cie_lun,
+            cie_martes: s.cie_mar,
+            cie_miércoles: s.cie_mie,
+            cie_jueves: s.cie_jue,
+            cie_viernes: s.cie_vie,
+            cie_sábado: s.cie_sab,
+        }
+        const horOrd = dias.map(dia => {
+            const apertura = horJSON[`ap_${dia}`];
+            const cierre = horJSON[`cie_${dia}`];
+            return {
+                apertura,
+                cierre,
+                dia: dia,
+
+            }
+        })
+        const listHor = [...horOrd.slice(numeroDia), ...horOrd.slice(0, numeroDia)]
+        let horario = "";
+        let badge;
+        if (listHor[0].apertura == "cerrado" || listHor[0].cierre == "cerrado") {
+            badge = '<span class="badge bg-danger">Cerrado</span>';
+
+            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</p>`
+        } else if (listHor[0].apertura <= formatoHora && listHor[0].cierre >= formatoHora) {
+            badge = '<span class="badge bg-primary">Abierto</span>';
+            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Hoy de ${listHor[0].apertura.substr(0, 5)} a. m. a ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </p>`
+
+        } else if (listHor[0].apertura >= formatoHora && listHor[0].cierre >= formatoHora) {
+            badge = '<span class="badge bg-danger">Cerrado</span>';
+            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Hoy de ${listHor[0].apertura.substr(0, 5)} a. m. a ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </p>`
+
+        } else {
+            badge = '<span class="badge bg-danger">Cerrado</span>';
+            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</p>`
+
+        }
+
+        console.log(listHor[0]);
+        return `
+        <div class="col-sm-6 col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-subtitle">
+                    ${s.nombre_tienda}
+                    </h2>
+                    ${badge}
+                    </div>
+                        <div class="card-body">
+                            <div class="cont-info-card">
+                            <p>${s.dir_tienda}</p>
+                            ${horario}
+                            </div>
+                            <div class="row d-flex">
+                            <a class="btn-detail" href="${s.url_tienda}" title="ir a tienda ${s.nombre_tienda}">
+                            <div class="btn-card">
+                            Ver detalle
+                            </div>
+                            </a>
+                            <a class="btn-detail" href="${s.url_llegar}" title="ir a tienda ${s.nombre_tienda}">
+                            <div class="btn-card bl-d">
+                            Cómo llegar
+                            </div>
+                            </a>
+                    </div>
+                    
+                </div>
+
+                
+
+            </div>
+        </div>
+        `
+    }).join("");
+
+    content.innerHTML = `<div class="col-md-12"><h3 class="title-sect-2"><span class="span-title">Otras tiendas en Medellín</span></h3></div>` + mapStores;
 }
 infoStore();

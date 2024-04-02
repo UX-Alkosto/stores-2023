@@ -123,20 +123,21 @@ const infoTiendas = info => {
                 let horarioDia = "";
                 horLunes = "";
 
-                t.ap_lun == "Cerrado" && t.cie_lun == "Cerrado" ? horLunes = "Cerrado" : horLunes = `${t.ap_lun.substr(0, 5)} a.m. - ${t.cie_lun.substr(0, 2) - 12}${t.cie_lun.substr(2, 3)} p.m.`;
+                t.ap_lun == "Cerrado" && t.cie_lun == "Cerrado" ? horLunes = "Cerrado" : horLunes = `${t.ap_lun.substr(0, 5)} a. m. - ${t.cie_lun.substr(0, 2) - 12}${t.cie_lun.substr(2, 3)} p. m.`;
                 horMartes = "";
-                t.ap_mar == "Cerrado" && t.cie_mar == "Cerrado" ? horMartes = "Cerrado" : horMartes = `${t.ap_mar.substr(0, 5)} a.m. - ${t.cie_mar.substr(0, 2) - 12}${t.cie_mar.substr(2, 3)} p.m.`;
+                t.ap_mar == "Cerrado" && t.cie_mar == "Cerrado" ? horMartes = "Cerrado" : horMartes = `${t.ap_mar.substr(0, 5)} a. m. - ${t.cie_mar.substr(0, 2) - 12}${t.cie_mar.substr(2, 3)} p. m.`;
                 horMie = "";
-                t.ap_mie == "Cerrado" && t.cie_mie == "Cerrado" ? horMie = "Cerrado" : horMie = `${t.ap_mie.substr(0, 5)} a.m. - ${t.cie_mie.substr(0, 2) - 12}${t.cie_mie.substr(2, 3)} p.m.`;
+                t.ap_mie == "Cerrado" && t.cie_mie == "Cerrado" ? horMie = "Cerrado" : horMie = `${t.ap_mie.substr(0, 5)} a. m. - ${t.cie_mie.substr(0, 2) - 12}${t.cie_mie.substr(2, 3)} p. m.`;
                 horJueves = "";
-                t.ap_jue == "Cerrado" && t.cie_jue == "Cerrado" ? horJueves = "Cerrado" : horJueves = `${t.ap_jue.substr(0, 5)} a.m. - ${t.cie_jue.substr(0, 2) - 12}${t.cie_jue.substr(2, 3)} p.m.`;
+                t.ap_jue == "Cerrado" && t.cie_jue == "Cerrado" ? horJueves = "Cerrado" : horJueves = `${t.ap_jue.substr(0, 5)} a. m. - ${t.cie_jue.substr(0, 2) - 12}${t.cie_jue.substr(2, 3)} p. m.`;
                 horViernes = "";
-                t.ap_vie == "Cerrado" && t.cie_vie == "Cerrado" ? horViernes = "Cerrado" : horViernes = `${t.ap_vie.substr(0, 5)} a.m. - ${t.cie_vie.substr(0, 2) - 12}${t.cie_vie.substr(2, 3)} p.m.`;
+                t.ap_vie == "Cerrado" && t.cie_vie == "Cerrado" ? horViernes = "Cerrado" : horViernes = `${t.ap_vie.substr(0, 5)} a. m. - ${t.cie_vie.substr(0, 2) - 12}${t.cie_vie.substr(2, 3)} p. m.`;
                 horSab = "";
-                t.ap_sab == "Cerrado" && t.cie_sab == "Cerrado" ? horSab = "Cerrado" : horSab = `${t.ap_sab.substr(0, 5)} a.m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p.m.`;
+                t.ap_sab == "Cerrado" && t.cie_sab == "Cerrado" ? horSab = "Cerrado" : horSab = `${t.ap_sab.substr(0, 5)} a. m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p. m.`;
                 horDom = "";
-                t.ap_dom == "Cerrado" && t.cie_dom == "Cerrado" ? horDom = "Cerrado" : horDom = `${t.ap_dom.substr(0, 5)} a.m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p.m.`;
-
+                t.ap_dom == "Cerrado" && t.cie_dom == "Cerrado" ? horDom = "Cerrado" : horDom = `${t.ap_dom.substr(0, 5)} a. m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p. m.`;
+                console.log(horDom);
+                console.log(t.ap_dom);
                 switch (numeroDia) {
                     case 1:
                         if (t.ap_lun != "Cerrado" || t.cie_lun != "Cerrado") {
@@ -147,7 +148,7 @@ const infoTiendas = info => {
                             horTienda = hora_apertura <= formatoHora && t.cie_lun >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
 
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -165,7 +166,7 @@ const infoTiendas = info => {
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
 
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -185,7 +186,7 @@ const infoTiendas = info => {
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
 
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -205,7 +206,7 @@ const infoTiendas = info => {
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
                         } else {
                             horTienda = `<h2 class="card-subtitle">
                         ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
@@ -222,7 +223,7 @@ const infoTiendas = info => {
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
                             console.log("Viernes");
                             break;
                         } else {
@@ -240,7 +241,7 @@ const infoTiendas = info => {
                                 horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
                                 console.log("Sabado");
                             } else {
                                 horTienda = `<h2 class="card-subtitle">
@@ -258,7 +259,7 @@ const infoTiendas = info => {
                                 horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a.m. - ${hora_cierre} p.m.</p>`;
+                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
                                 console.log("Domingo");
                             } else {
                                 horTienda = `<h2 class="card-subtitle">
@@ -286,26 +287,26 @@ const infoTiendas = info => {
                                 <div class="collapse" id="horariosAcordion${idTienda}">
                                 <ul class="list-horario">
                                 <li>Lunes: ${horLunes} </li>
-                                <li>Martes: ${t.ap_mar.substr(0, 5)} a.m. - ${t.cie_mar.substr(0, 2) - 12}${t.cie_mar.substr(2, 3)} p.m.</li>
-                                <li>Miércoles: ${t.ap_mie.substr(0, 5)} a.m. - ${t.cie_mie.substr(0, 2) - 12}${t.cie_mie.substr(2, 3)} p.m.</li>
-                                <li>Jueves: ${t.ap_jue.substr(0, 5)} a.m. - ${t.cie_jue.substr(0, 2) - 12}${t.cie_jue.substr(2, 3)} p.m.</li>
-                                <li>Viernes: ${t.ap_vie.substr(0, 5)} a.m. - ${t.cie_vie.substr(0, 2) - 12}${t.cie_vie.substr(2, 3)} p.m.</li>
-                                <li>Sábado: ${t.ap_sab.substr(0, 5)} a.m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p.m.</li>
-                                <li>Domingo: ${t.ap_dom.substr(0, 5)} a.m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p.m.</li>
+                                <li>Martes: ${horMartes}</li>
+                                <li>Miércoles: ${horMie}</li>
+                                <li>Jueves: ${horJueves}</li>
+                                <li>Viernes: ${horViernes}</li>
+                                <li>Sábado: ${horSab}</li>
+                                <li>Domingo: ${horDom}</li>
                                 </ul>
                                 </div>
                                 </div>
-                                <div class="row">
-                                <div class="col-xs-6 txt-center b-right-2 p-0">
-                                <div class="cnt-btn border-left">
-                                <a href="${urlTienda}" class="a-footer">Ver detalle</a>
+                                <div class="row d-flex">
+                                <a class="btn-detail" href="${urlTienda}" title="ir a tienda ${t.nombre_tienda}">
+                                <div class="btn-card">
+                                Ver detalle
                                 </div>
+                                </a>
+                                <a class="btn-detail" href="${mapsUrl}" title="Como llegar a ${t.nombre_tienda}">
+                                <div class="btn-card bl-d">
+                                Cómo llegar
                                 </div>
-                                <div class="col-xs-6 txt-center p-0">
-                                <div class="cnt-btn border-right">
-                                <a href="${mapsUrl}" target="_blank" rel="nofollow noopener noreferrer" class="a-footer">Cómo llegar <i class="alk-icon-arrive"></i></a>
-                                </div>
-                                </div>
+                                </a>
                                 </div>
                                 </div>
                                 </div>
@@ -327,6 +328,7 @@ const infoTiendas = info => {
 
             return;
         } else {
+
             info.map((e) => {
                 content.innerHTML = `
                 <div class="col-md-12">
@@ -361,6 +363,8 @@ const infoTiendas = info => {
                 </div>
                 `;
             })
+            let cardBadge = document.querySelector(".card-subtitle");
+            cardBadge.style.width = "65%";
         }
     }
 

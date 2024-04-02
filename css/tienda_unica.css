@@ -28,7 +28,6 @@ p {
     text-align: center;
     background: var(--primary-color1);
     color: white;
-
     border-radius: 0px 0px 0px 4px;
 }
 
@@ -127,7 +126,10 @@ h3.title-sect-2 {
     border-radius: 4px;
     width: 100%;
 }
-
+#other-stores{
+    display: -webkit-box;
+    overflow: auto;
+}
 .txt-ciudad {
     font-size: 16px;
     font-weight: bold;

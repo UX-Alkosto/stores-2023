@@ -5,8 +5,25 @@ const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
-const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/armenia/unicentro";
+const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/medellin/florida-parque-comercial";
 const urlSite = urlPrueba.split("/")[2];
+/* console.log(fecha.getDay());
+console.log(fecha.getMonth()); */
+const festivosCol = [
+    [1, 9],
+    [],
+    [25, 28, 29],
+    [],
+    [1, 13],
+    [3, 10],
+    [1, 20],
+    [7, 19],
+    [],
+    [14],
+    [4, 11],
+    [8, 25]
+]
+
 
 /* const urlSite = window.location.href.split("/")[2]; */
 const formatoHora = `${horas}:${minutos}:${segundos}`;
@@ -21,6 +38,7 @@ const dias = [
     'viernes',
     'sábado',
 ];
+
 
 const content = document.getElementById('cont-principal');
 
@@ -50,7 +68,14 @@ switch (urlSite) {
         break;
 }
 let globalData = {};
+
 const numeroDia = new Date(fechaComoCadena).getDay();
+const mesActual = festivosCol[fecha.getMonth()];
+const diaActual = fecha.getDate();
+let filtroFestivo = mesActual.filter(fest => fest == diaActual);
+const esFestivo = filtroFestivo.length > 0 && filtroFestivo[0] === diaActual;
+const diasSemana = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
+let horarios = {};
 
 const nombreDia = dias[numeroDia];
 
@@ -73,9 +98,7 @@ function infoStore() {
         .then(response => response.json())
         .then(data => {
             globalData["info-all"] = data.products;
-            let info = globalData["info-all"].filter(item => item.tienda != null || item.tienda != "" && item.url_tienda == urlPrueba);
-
-            console.log(info);
+            let info = globalData["info-all"].filter(item => item.tienda != null && item.url_tienda == urlPrueba);
             printInfo(info[0])
 
             let otStores = globalData["info-all"].filter(item => item.tienda != null && item.ciudad_tienda == info[0].ciudad_tienda && item.nombre_tienda != info[0].nombre_tienda);
@@ -87,52 +110,53 @@ function infoStore() {
 }
 
 const printInfo = (i) => {
-    const horJSON = {
-        ap_domingo: i.ap_dom,
-        ap_lunes: i.ap_lun,
-        ap_martes: i.ap_mar,
-        ap_miércoles: i.ap_mie,
-        ap_jueves: i.ap_jue,
-        ap_viernes: i.ap_vie,
-        ap_sábado: i.ap_sab,
-        cie_domingo: i.cie_dom,
-        cie_lunes: i.cie_lun,
-        cie_martes: i.cie_mar,
-        cie_miércoles: i.cie_mie,
-        cie_jueves: i.cie_jue,
-        cie_viernes: i.cie_vie,
-        cie_sábado: i.cie_sab,
-    }
+    let msjFestivo = "";
+    esFestivo ? msjFestivo = " festivo" : msjFestivo = "";
 
-    const horOrd = dias.map(dia => {
-        const apertura = horJSON[`ap_${dia}`];
-        const cierre = horJSON[`cie_${dia}`];
-        return {
-            apertura,
-            cierre,
-            dia: dia,
+    diasSemana.forEach((dia, index) => {
+        const diaNumero = index;
+        let apertura = i[`ap_${dia}`];
+        let cierre = i[`cie_${dia}`];
 
+        if (numeroDia === diaNumero && esFestivo && apertura !== "Cerrado") {
+            apertura = i.ap_dom;
+            cierre = i.cie_dom;
         }
-    })
-    const listHor = [...horOrd.slice(numeroDia), ...horOrd.slice(0, numeroDia)]
+        horarios[`ap_${dia}`] = apertura;
+        horarios[`cie_${dia}`] = cierre;
+    });
+
+    const horOrd = diasSemana.map((dia, index) => {
+        const diaNombre = dias[index];
+        return {
+            apertura: horarios[`ap_${dia}`],
+            cierre: horarios[`cie_${dia}`],
+            dia: diaNombre,
+        };
+    });
+
+    const listHor = [...horOrd.slice(numeroDia), ...horOrd.slice(0, numeroDia)];
+
 
     let horario = "";
+
+
+
     if (listHor[0].apertura == "Cerrado" || listHor[0].cierre == "Cerrado") {
 
-        horario = `<p class="apertura">Hoy ${listHor[0].dia}: <br><span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m. </span></p>`
+        horario = `<p class="apertura">Hoy ${listHor[0].dia}${msjFestivo}: <br><span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m. </span></p>`
     } else if (listHor[0].apertura <= formatoHora && listHor[0].cierre >= formatoHora) {
-        horario = `<p class="apertura">Hoy ${listHor[0].dia}: <br> <span class="open"> abierto, cierra a las ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </span></p>`
+        horario = `<p class="apertura">Hoy ${listHor[0].dia}${msjFestivo}: <br> <span class="open"> abierto, cierra a las ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </span></p>`
 
     } else if (listHor[0].apertura >= formatoHora && listHor[0].cierre >= formatoHora) {
         horario = `<p class="apertura"><span class="close-txt">Cerrado, abre a las ${listHor[0].apertura.substr(0, 5)} a. m. </span></p>`
 
     } else {
-        horario = `<p class="apertura">Hoy ${listHor[0].dia}: <br> <span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</span></p>`
+        horario = `<p class="apertura">Hoy ${listHor[0].dia}${msjFestivo}: <br> <span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</span></p>`
 
     }
     let listDias = "";
     listHor.map((h, i) => {
-        let apert = "";
         let horDia = "";
         horDia = h.apertura == "Cerrado" || h.cierre == "Cerrado" ? horDia = `<li class='element-hor'>${h.dia.charAt(0).toUpperCase() + h.dia.slice(1)}: Cerrado</li>` : horDia = `<li class="element-hor">${h.dia.charAt(0).toUpperCase() + h.dia.slice(1)} de: ${h.apertura.substr(0, 5)} a. m. a ${h.cierre.substr(0, 2)-12}${h.cierre.substr(2,3)} p. m.</li>`
 
@@ -154,7 +178,7 @@ const printInfo = (i) => {
 <div class="cont-all">
     <div class="row cont-info">
     <div class="col-md-5 mb-4">
-    <img loading="lazy" src="${i.img_tienda}" class="img img-responsive img-store" width="800" alt="${i.nombre_tienda}">
+    <img src="${i.img_tienda}" class="img img-responsive img-store" width="800" alt="${i.nombre_tienda}">
     </div>
     <div class="col-md-4 mb-4 info-gen">
     <div class="info_detalle">
@@ -186,38 +210,31 @@ const printInfo = (i) => {
 }
 
 const otherStores = (i) => {
-    console.log(i);
     const contTitle = document.querySelector("#title-other-stores");
     const content = document.querySelector("#other-stores");
     let title = `<div class="col-md-12"><h3 class="title-sect-2"><span class="span-title">Otras tiendas en ${i[0].ciudad_tienda.split(",")[0]} </span></h3></div>`
     const mapStores = i.map((s, index) => {
-        console.log(s);
-        const horJSON = {
-            ap_domingo: s.ap_dom,
-            ap_lunes: s.ap_lun,
-            ap_martes: s.ap_mar,
-            ap_miércoles: s.ap_mie,
-            ap_jueves: s.ap_jue,
-            ap_viernes: s.ap_vie,
-            ap_sábado: s.ap_sab,
-            cie_domingo: s.cie_dom,
-            cie_lunes: s.cie_lun,
-            cie_martes: s.cie_mar,
-            cie_miércoles: s.cie_mie,
-            cie_jueves: s.cie_jue,
-            cie_viernes: s.cie_vie,
-            cie_sábado: s.cie_sab,
-        }
-        const horOrd = dias.map(dia => {
-            const apertura = horJSON[`ap_${dia}`];
-            const cierre = horJSON[`cie_${dia}`];
-            return {
-                apertura,
-                cierre,
-                dia: dia,
-
+        diasSemana.forEach((dia, index) => {
+            const diaNumero = index;
+            let apertura = s[`ap_${dia}`];
+            let cierre = s[`cie_${dia}`];
+    
+            if (numeroDia === diaNumero && esFestivo && apertura !== "Cerrado") {
+                apertura = s.ap_dom;
+                cierre = s.cie_dom;
             }
-        })
+            horarios[`ap_${dia}`] = apertura;
+            horarios[`cie_${dia}`] = cierre;
+        });
+    
+        const horOrd = diasSemana.map((dia, index) => {
+            const diaNombre = dias[index];
+            return {
+                apertura: horarios[`ap_${dia}`],
+                cierre: horarios[`cie_${dia}`],
+                dia: diaNombre,
+            };
+        });
         const listHor = [...horOrd.slice(numeroDia), ...horOrd.slice(0, numeroDia)]
         let horario = "";
         let badge;
@@ -238,8 +255,6 @@ const otherStores = (i) => {
             horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</p>`
 
         }
-
-        console.log(listHor[0]);
         return `
         <div class="col-sm-6 col-md-4">
             <div class="card">
@@ -251,7 +266,7 @@ const otherStores = (i) => {
                 </div>
                         <div class="card-body">
                             <div class="cont-info-card">
-                            <p>${s.dir_tienda}</p>
+                            <p class="horario-tienda">${s.dir_tienda}</p>
                             ${horario}
                             </div>
                             <div class="row d-flex">

@@ -280,8 +280,8 @@ const infoTiendas = info => {
                                 </div>
                                 <div class="card-body">
                                 <div class="cont-info-card">
-                                <p>${direccion}</p>
-                                <div data-toggle="collapse" data-target="#horariosAcordion${idTienda}" aria-expanded="false" aria-controls="horariosAcordion${idTienda}" class="accordion-button collapsed">
+                                <p class="horario-tienda">${direccion}</p>
+                                <div data-toggle="collapse" data-target="#horariosAcordion${idTienda}" class="accordion-button collapsed">
                                 ${horarioDia}
                                 </div>
                                 <div class="collapse" id="horariosAcordion${idTienda}">

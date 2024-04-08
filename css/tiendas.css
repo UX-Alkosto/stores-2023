@@ -207,6 +207,13 @@
     color: var(--text-color1);
 }
 
+.horario-tienda {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
 .header-envio {
     display: flex;
     justify-content: space-between;

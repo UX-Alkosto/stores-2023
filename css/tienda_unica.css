@@ -93,6 +93,13 @@ p {
 
 }
 
+.horario-tienda {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
 .horario i {
     margin-right: 8px;
     font-size: 16px;
@@ -123,13 +130,16 @@ h3.title-sect-2 {
 
 .img-store {
     aspect-ratio: 16/9;
+    object-fit: cover;
     border-radius: 4px;
     width: 100%;
 }
-#other-stores{
+
+#other-stores {
     display: -webkit-box;
     overflow: auto;
 }
+
 .txt-ciudad {
     font-size: 16px;
     font-weight: bold;

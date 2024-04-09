@@ -5,7 +5,7 @@ const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
-const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/medellin/florida-parque-comercial";
+const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/medellin/aventura";
 const urlSite = urlPrueba.split("/")[2];
 /* console.log(fecha.getDay());
 console.log(fecha.getMonth()); */
@@ -256,7 +256,7 @@ const otherStores = (i) => {
 
         }
         return `
-        <div class="col-sm-6 col-md-4">
+        <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-subtitle">

@@ -138,7 +138,9 @@ h3.title-sect-2 {
 #other-stores {
     display: -webkit-box;
     overflow: auto;
+    padding-right: 4rem;
 }
+
 
 .txt-ciudad {
     font-size: 16px;

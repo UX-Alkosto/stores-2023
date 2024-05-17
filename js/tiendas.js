@@ -4,7 +4,7 @@ const horaMin = hora.substr(0, 5);
 const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 
-const urlPrueba = "https://www.alkomprar.com/nuestra-compania/tiendas/c/tiendas";
+const urlPrueba = "https://www.alkosto.com/nuestra-compania/tiendas/c/tiendas";
 const urlSite = urlPrueba.split("/")[2];
 /* const urlSite = window.location.href.split("/")[2]; */
 const formatoHora = `${horas}:${minutos}`;

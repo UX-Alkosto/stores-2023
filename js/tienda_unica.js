@@ -5,7 +5,7 @@ const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
-const urlPrueba = "https://www.alkomprar.com/nuestras-tiendas/medellin/aventura";
+const urlPrueba = "https://www.alkosto.com/nuestra-compania/tiendas/bogota/carrera-30";
 const urlSite = urlPrueba.split("/")[2];
 /* console.log(fecha.getDay());
 console.log(fecha.getMonth()); */
@@ -176,7 +176,7 @@ const printInfo = (i) => {
     const store =
         `
 <div class="cont-all">
-    <div class="row cont-info">
+    <div class="row cont-info-store">
     <div class="col-md-5 mb-4">
     <img src="${i.img_tienda}" class="img img-responsive img-store" width="800" alt="${i.nombre_tienda}">
     </div>

@@ -66,7 +66,7 @@ p {
     padding: 16px 15px 0px 15px;
 }
 
-.cont-info {
+.cont-info-store {
     padding-top: 5rem;
     background-color: #F8F8F8;
     border-radius: 4px;
@@ -141,6 +141,10 @@ h3.title-sect-2 {
     padding-right: 4rem;
 }
 
+.m-4 {
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
 
 .txt-ciudad {
     font-size: 16px;

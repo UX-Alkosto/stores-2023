@@ -107,6 +107,10 @@ p {
     color: var(--text-color1);
 }
 
+h1.h1_content {
+    display: none;
+}
+
 h2.card-subtitle {
     width: 75%;
     color: var(--text-color1);

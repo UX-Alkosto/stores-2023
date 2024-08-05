@@ -5,9 +5,13 @@ const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
-const urlPrueba = "https://www.alkosto.com/nuestra-compania/tiendas/bogota/carrera-30";
-const urlSite = urlPrueba.split("/")[2];
-/* console.log(fecha.getDay());
+
+/*
+const urlPage = "https://www.alkosto.com/nuestra-compania/tiendas/bogota/oulet?sdsd";
+const urlPageLimpia = urlPage.split("?")[0];
+const urlSite = urlPage.split("/")[2];
+console.log(urlPageLimpia);
+ console.log(fecha.getDay());
 console.log(fecha.getMonth()); */
 const festivosCol = [
     [1, 9],
@@ -25,7 +29,9 @@ const festivosCol = [
 ]
 
 
-/* const urlSite = window.location.href.split("/")[2]; */
+const urlPage = window.location.href;
+const urlPageLimpia = urlPage.split("?")[0];
+const urlSite = urlPage.split("/")[2];
 const formatoHora = `${horas}:${minutos}:${segundos}`;
 
 const fechaComoCadena = fecha;
@@ -98,7 +104,7 @@ function infoStore() {
         .then(response => response.json())
         .then(data => {
             globalData["info-all"] = data.products;
-            let info = globalData["info-all"].filter(item => item.tienda != null && item.url_tienda == urlPrueba);
+            let info = globalData["info-all"].filter(item => item.tienda != null && item.url_tienda == urlPageLimpia);
             printInfo(info[0])
 
             let otStores = globalData["info-all"].filter(item => item.tienda != null && item.ciudad_tienda == info[0].ciudad_tienda && item.nombre_tienda != info[0].nombre_tienda);
@@ -112,6 +118,7 @@ function infoStore() {
 const printInfo = (i) => {
     let msjFestivo = "";
     esFestivo ? msjFestivo = " festivo" : msjFestivo = "";
+    console.log(i);
 
     diasSemana.forEach((dia, index) => {
         const diaNumero = index;
@@ -218,7 +225,7 @@ const otherStores = (i) => {
             const diaNumero = index;
             let apertura = s[`ap_${dia}`];
             let cierre = s[`cie_${dia}`];
-    
+
             if (numeroDia === diaNumero && esFestivo && apertura !== "Cerrado") {
                 apertura = s.ap_dom;
                 cierre = s.cie_dom;
@@ -226,7 +233,7 @@ const otherStores = (i) => {
             horarios[`ap_${dia}`] = apertura;
             horarios[`cie_${dia}`] = cierre;
         });
-    
+
         const horOrd = diasSemana.map((dia, index) => {
             const diaNombre = dias[index];
             return {

@@ -136,8 +136,6 @@ const infoTiendas = info => {
                 t.ap_sab == "Cerrado" && t.cie_sab == "Cerrado" ? horSab = "Cerrado" : horSab = `${t.ap_sab.substr(0, 5)} a. m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p. m.`;
                 horDom = "";
                 t.ap_dom == "Cerrado" && t.cie_dom == "Cerrado" ? horDom = "Cerrado" : horDom = `${t.ap_dom.substr(0, 5)} a. m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p. m.`;
-                console.log(horDom);
-                console.log(t.ap_dom);
                 switch (numeroDia) {
                     case 1:
                         if (t.ap_lun != "Cerrado" || t.cie_lun != "Cerrado") {
@@ -224,7 +222,6 @@ const infoTiendas = info => {
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
                             horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
-                            console.log("Viernes");
                             break;
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -242,7 +239,6 @@ const infoTiendas = info => {
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
                                 horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
-                                console.log("Sabado");
                             } else {
                                 horTienda = `<h2 class="card-subtitle">
                             ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
@@ -260,7 +256,6 @@ const infoTiendas = info => {
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
                                 horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre} p. m.</p>`;
-                                console.log("Domingo");
                             } else {
                                 horTienda = `<h2 class="card-subtitle">
                             ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
@@ -440,7 +435,6 @@ const printRes = compararResultado => {
     for (let i = 0; i < lists.length; i++) {
         opSelect = lists[i].id;
         lists[i].addEventListener('click', function selectCard() {
-            console.log(lists[i].id);
             buscador.setAttribute("placeholder", lists[i].innerText);
             cardSeleccionada(lists[i].id);
         });

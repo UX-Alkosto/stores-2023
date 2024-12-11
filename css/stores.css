@@ -162,7 +162,7 @@
 }
 
 .cnt-btn-envio {
-    background-color: var(--button-primary-background-color);
+    background-color: var(--link-text-color);
     border-radius: 0 0 4px 4px;
     text-align: -webkit-center;
     text-align-last: center

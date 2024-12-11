@@ -353,7 +353,7 @@ const infoTiendas = info => {
                             </div>
                         </div>
                         </div>
-                        <a href="/entregas-devoluciones/envio-gratis/c/envio-gratis" class="btn-envio">
+                        <a href="/entregas-devoluciones/envio-gratis" class="btn-envio">
                         <div class="cnt-btn-envio">
                             Conoce más sobre envío gratis
                             </div>

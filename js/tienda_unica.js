@@ -282,7 +282,7 @@ const otherStores = (i) => {
                             Ver detalle
                             </div>
                             </a>
-                            <a class="btn-detail" href="${s.url_llegar}" title="Como llegar a ${s.nombre_tienda}">
+                            <a class="btn-detail" target="_blank" rel="noreferer noopener" href="${s.url_llegar}" title="Como llegar a ${s.nombre_tienda}">
                             <div class="btn-card bl-d">
                             Cómo llegar
                             </div>

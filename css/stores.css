@@ -248,8 +248,6 @@
 }
 
 .title h1 {
-    border-bottom: 2px solid var(--primary-color1);
-    font-size: 24px;
     margin: 0;
 }
 

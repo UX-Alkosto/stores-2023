@@ -4,9 +4,9 @@ const horaMin = hora.substr(0, 5);
 const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 
-const urlPrueba = "https://www.alkosto.com/nuestra-compania/tiendas/c/tiendas";
-/* const urlSite = urlPrueba.split("/")[2]; */
-const urlSite = window.location.href.split("/")[2];
+const urlPrueba = "https://www.ktronix.com/nuestra-compania/tiendas/c/tiendas";
+const urlSite = urlPrueba.split("/")[2];
+//const urlSite = window.location.href.split("/")[2];
 const formatoHora = `${horas}:${minutos}`;
 
 const fechaComoCadena = fecha;
@@ -175,11 +175,14 @@ const infoTiendas = info => {
                         break;
                     case 3:
                         if (t.ap_mie != "Cerrado" || t.cie_mie != "Cerrado") {
+                            
 
                             hora_apertura = t.ap_mie.substr(0, 5);
-                            aj_hora_cierre = t.cie_mie.substr(0, 2) - 12;
+                            aj_hora_cierre = t.cie_mie.substr(0, 2);
                             aj_hora_cierre2 = t.cie_mie.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
+                            console.log(t.nombre_tienda,":", hora_apertura,":",hora_cierre);
+                            console.log(t.nombre_tienda,":", hora_cierre);
                             txtBadge = "";
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
@@ -195,7 +198,7 @@ const infoTiendas = info => {
                         break;
                     case 4:
                         if (t.ap_jue != "Cerrado" || t.cie_jue != "Cerrado") {
-
+                            console.log(t.nombre_tienda);
                             hora_apertura = t.ap_jue.substr(0, 5);
                             aj_hora_cierre = t.cie_jue.substr(0, 2) - 12;
                             aj_hora_cierre2 = t.cie_jue.substr(2, 3);

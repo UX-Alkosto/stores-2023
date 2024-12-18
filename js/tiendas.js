@@ -181,8 +181,6 @@ const infoTiendas = info => {
                             aj_hora_cierre = t.cie_mie.substr(0, 2);
                             aj_hora_cierre2 = t.cie_mie.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            console.log(t.nombre_tienda,":", hora_apertura,":",hora_cierre);
-                            console.log(t.nombre_tienda,":", hora_cierre);
                             txtBadge = "";
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
@@ -198,7 +196,6 @@ const infoTiendas = info => {
                         break;
                     case 4:
                         if (t.ap_jue != "Cerrado" || t.cie_jue != "Cerrado") {
-                            console.log(t.nombre_tienda);
                             hora_apertura = t.ap_jue.substr(0, 5);
                             aj_hora_cierre = t.cie_jue.substr(0, 2) - 12;
                             aj_hora_cierre2 = t.cie_jue.substr(2, 3);

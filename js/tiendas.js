@@ -140,13 +140,13 @@ const infoTiendas = info => {
                     case 1:
                         if (t.ap_lun != "Cerrado" || t.cie_lun != "Cerrado") {
                             hora_apertura = t.ap_lun.substr(0, 5);
-                            aj_hora_cierre = t.cie_lun.substr(0, 2);
+                            aj_hora_cierre = t.cie_lun.substr(0, 2);                            
                             aj_hora_cierre2 = t.cie_lun.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                             horTienda = hora_apertura <= formatoHora && t.cie_lun >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
 
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -158,13 +158,13 @@ const infoTiendas = info => {
                         if (t.ap_mar != "Cerrado" || t.ap_mar != "Cerrado") {
 
                             hora_apertura = t.ap_mar.substr(0, 5);
-                            aj_hora_cierre = t.cie_mar.substr(0, 2);
+                            aj_hora_cierre = t.cie_mar.substr(0, 2);                            
                             aj_hora_cierre2 = t.cie_mar.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
 
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -178,14 +178,14 @@ const infoTiendas = info => {
                             
 
                             hora_apertura = t.ap_mie.substr(0, 5);
-                            aj_hora_cierre = t.cie_mie.substr(0, 2);
+                            aj_hora_cierre = t.cie_mie.substr(0, 2);                            
                             aj_hora_cierre2 = t.cie_mie.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                             txtBadge = "";
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
 
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -197,14 +197,14 @@ const infoTiendas = info => {
                     case 4:
                         if (t.ap_jue != "Cerrado" || t.cie_jue != "Cerrado") {
                             hora_apertura = t.ap_jue.substr(0, 5);
-                            aj_hora_cierre = t.cie_jue.substr(0, 2);
+                            aj_hora_cierre = t.cie_jue.substr(0, 2);                            
                             aj_hora_cierre2 = t.cie_jue.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                             txtBadge = "";
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
                         } else {
                             horTienda = `<h2 class="card-subtitle">
                         ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
@@ -214,14 +214,14 @@ const infoTiendas = info => {
                     case 5:
                         if (t.ap_vie != "Cerrado" || t.cie_vie != "Cerrado") {
                             hora_apertura = t.ap_vie.substr(0, 5);
-                            aj_hora_cierre = t.cie_vie.substr(0, 2);
+                            aj_hora_cierre = t.cie_vie.substr(0, 2);                            
                             aj_hora_cierre2 = t.cie_vie.substr(2, 3);
                             hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                             txtBadge = "";
                             horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
                             break;
                         } else {
                             horTienda = `<h2 class="card-subtitle">
@@ -232,13 +232,13 @@ const infoTiendas = info => {
                             if (t.ap_sab != "Cerrado" || t.cie_sab != "Cerrado") {
 
                                 hora_apertura = t.ap_sab.substr(0, 5);
-                                aj_hora_cierre = t.cie_sab.substr(0, 2);
+                                aj_hora_cierre = t.cie_sab.substr(0, 2);                                
                                 aj_hora_cierre2 = t.cie_sab.substr(2, 3);
                                 hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                                 horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
                             } else {
                                 horTienda = `<h2 class="card-subtitle">
                             ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
@@ -249,13 +249,13 @@ const infoTiendas = info => {
                             if (t.ap_dom != "Cerrado" || t.cie_dom != "Cerrado") {
 
                                 hora_apertura = t.ap_dom.substr(0, 5);
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
+                                aj_hora_cierre = t.cie_dom.substr(0, 2);                                
                                 aj_hora_cierre2 = t.cie_dom.substr(2, 3);
                                 hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
                                 horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
                     ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${hora_cierre}</p>`;
+                                horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre-12}${aj_hora_cierre2} p. m.</p>`;
                             } else {
                                 horTienda = `<h2 class="card-subtitle">
                             ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;

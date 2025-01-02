@@ -118,7 +118,6 @@ function infoStore() {
 const printInfo = (i) => {
     let msjFestivo = "";
     esFestivo ? msjFestivo = " festivo" : msjFestivo = "";
-    console.log(i);
 
     diasSemana.forEach((dia, index) => {
         const diaNumero = index;

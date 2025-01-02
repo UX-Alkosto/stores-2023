@@ -14,17 +14,17 @@ console.log(urlPageLimpia);
  console.log(fecha.getDay());
 console.log(fecha.getMonth()); */
 const festivosCol = [
-    [1, 9],
+    [1, 6],
     [],
-    [25, 28, 29],
+    [24],
+    [17, 18],
+    [1],
+    [2, 23, 30],
+    [20],
+    [7, 18],
     [],
-    [1, 13],
-    [3, 10],
-    [1, 20],
-    [7, 19],
-    [],
-    [14],
-    [4, 11],
+    [13],
+    [3, 17],
     [8, 25]
 ]
 

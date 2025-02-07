@@ -55,19 +55,22 @@ var textoIngresado = "";
 
 let opSelect;
 
-let urlAPI;
+let urlAPI, bgPrimary;
 switch (urlSite) {
     case "www.alkosto.com":
-        urlAPI = urlAK
+        urlAPI = urlAK;
         site = "Tiendas Alkosto";
+        bgPrimary = "var(--primary-color2)";
         break;
     case "www.ktronix.com":
         urlAPI = urlKT
         site = "Tiendas Ktronix";
+        bgPrimary = "var(--primary-color2)";
         break;
     case "www.alkomprar.com":
         urlAPI = urlALKP
         site = "Tiendas Alkomprar";
+        bgPrimary = "var(--breadcrumb-root)";
         break;
 
     default:
@@ -294,5 +297,11 @@ const otherStores = (i) => {
     }).join("");
     contTitle.innerHTML = title;
     content.innerHTML = mapStores;
+    document.querySelectorAll(".bg-primary").forEach(element => {
+
+        console.log(element);
+        element.style.backgroundColor = bgPrimary;
+        element.style.border = ` 1px solid ${bgPrimary}`;
+    });
 }
 infoStore();

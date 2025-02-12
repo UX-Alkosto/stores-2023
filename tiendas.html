@@ -83,14 +83,31 @@
         </section>
     </main>
     <style>
+        /* SELECCIONAR ESTILO POR CADA TIENDA Y ELIMINAR EL QUE NO CORRESPONDE. */
+
+        /* Alkosto */
+
+        .cont-no-results img {
+            filter: hue-rotate(125deg) brightness(100%);
+        }
+
         /* ktronix */
         .accordion-button::before {
             filter: hue-rotate(-28deg) brightness(100%);
         }
 
+        .cont-no-results img {
+            filter: hue-rotate(-20deg) brightness(100%);
+        }
+
+
         /* alkomprar */
         .accordion-button::before {
             filter: hue-rotate(75deg) brightness(100%);
+        }
+
+        .cont-no-results img {
+            filter: hue-rotate(-140deg) brightness(100%);
         }
 
         span.badge.bg-primary {

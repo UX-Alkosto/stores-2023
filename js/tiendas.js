@@ -507,7 +507,7 @@ const printRes = compararResultado => {
         listaCoincidencias.style.display = "block";
         listaCoincidencias.innerHTML = `<div class="cont-no-results txt-center">
         
-        <img class="img img-responsive" src="https://www.alkosto.com/medias/no-resultados-envio.png?context=bWFzdGVyfG1ldG9kb3MtZW52aW98MTA4MjB8aW1hZ2UvcG5nfGhjNS9oYWQvMTM1Njg3MDk1MjU1MzQvbm9fcmVzdWx0YWRvc19lbnZpby5wbmd8NDFjYmNlYWQ1YzFmYTRkNmEyZjdkOGY3Yzg5Mzk2Mjc2OWQ2NGI1ZTM0ZjhkMzU0ZmU1ZWEwZDA1ODBhZmNmYQ"/>
+        <img class="img img-responsive" src="https://media.aws.alkomprar.com/ymarketingcolcomercio/Alkosto/envio-gratis/envio_no_encontrado.png"/>
         <div class="txt-no-results txt-center">
         <h4>¡Aún no llegamos a tu destino!
         Seguimos trabajando para ello.</h4>

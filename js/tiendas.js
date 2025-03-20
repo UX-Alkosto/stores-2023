@@ -61,6 +61,7 @@ var textoIngresado = "";
 let opSelect;
 
 let urlAPI;
+let site;
 switch (urlSite) {
     case "www.alkosto.com":
         urlAPI = urlAK
@@ -426,84 +427,52 @@ const infoTiendas = info => {
             cardBadge.style.width = "65%";
         }
     }
-
-
-
 }
+
+let resultadosPrevios = new Set();
 
 const buscarResultados = async searchText => {
     btn_tiendas.classList.add("hidden");
-    consulta = globalData["info-all"];
+    const consulta = globalData["info-all"];
+
+    if (searchText.length < 3) {
+        listaCoincidencias.innerHTML = "";
+        contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
+        resultadosPrevios.clear(); // Limpiamos los resultados previos        
+        return;
+    }
+
     let compararResultado = consulta.filter(
         resultado => {
-            const newResult = new RegExp(`^${limpiarTexto(searchText)}`, 'gi');
-
-            textoIngresado = searchText;
-
-            let ciud = resultado.ciudad_tienda;
-
-            let ciudad = limpiarTexto(ciud);
-
-            return ciudad;
+            let ciudad = limpiarTexto(resultado.ciudad_tienda);
+            return ciudad.includes(limpiarTexto(searchText));
         }
     );
 
-    if (searchText.length === 0) {
-        compararResultado = [];
-        contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
-    } else if (searchText.length > 2) {
-        printRes(compararResultado);
-    }
+    let nuevosResultados = new Set(compararResultado.map(r => limpiarTexto(r.ciudad_tienda)));
+    if (compararSets(resultadosPrevios, nuevosResultados)) return;
 
+    resultadosPrevios = nuevosResultados;
+
+    printRes(compararResultado);
 }
+
+// Función para comparar dos sets
+const compararSets = (set1, set2) => {
+    if (set1.size !== set2.size) return false;
+    for (let item of set1) {
+        if (!set2.has(item)) return false;
+    }
+    return true;
+};
+
 const printRes = compararResultado => {
     listaCoincidencias.innerHTML = "";
     content.innerHTML = "";
     resultSearch.innerHTML = "";
     let lists = "";
     carrusel.style.display = "none";
-    if (compararResultado.length > 0) {
-        contInput.innerHTML = `<i class="alk-icon-close icon-search" title="Limpiar campo"></i>`;
-        contInput.addEventListener('click', () => {
-            buscador.value = "";
-            contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
-            listaCoincidencias.innerHTML = "";
-            buscador.setAttribute("placeholder", "Ingresa tu municipio o departamento");
-            buscador.focus();
-        }, 4000);
-        let ciudadesEx = new Set();
-        const opciones = compararResultado.map(card => {
-
-            let ciudad = card.ciudad_tienda;
-            let text = buscador.value;
-            let textLimpio = limpiarTexto(text);
-            let ciudLimpio = limpiarTexto(ciudad);
-            if (ciudLimpio.includes(textLimpio) && !ciudadesEx.has(ciudLimpio)) {
-
-                buscador.style.border = "";
-                listaCoincidencias.style.display = "block";
-                listaCoincidencias.innerHTML +=
-                    `<span id="${ciudLimpio}" class="selectOp"><div class="dropdown-item">
-            <div class="panel panel-default">
-            <div class="panel-heading">
-            <p><i class="alk-icon-pin-generico"></i> ${ciudad}</p>
-            </div>
-            </div>
-            </div></span>`;
-                ciudadesEx.add(ciudLimpio);
-            }
-        }).join('');
-    }
-    lists = listaCoincidencias.querySelectorAll("span");
-
-    for (let i = 0; i < lists.length; i++) {
-        opSelect = lists[i].id;
-        lists[i].addEventListener('click', function selectCard() {
-            buscador.setAttribute("placeholder", lists[i].innerText);
-            cardSeleccionada(lists[i].id);
-        });
-    }
-    if (lists.length === 0) {
+    if (compararResultado.length === 0) {
         listaCoincidencias.style.display = "block";
         listaCoincidencias.innerHTML = `<div class="cont-no-results txt-center">
         
@@ -523,7 +492,51 @@ const printRes = compararResultado => {
             buscador.focus();
             allStores();
         })
+        return;
     }
+
+
+    contInput.innerHTML = `<i class="alk-icon-close icon-search" title="Limpiar campo"></i>`;
+    contInput.addEventListener('click', () => {
+        buscador.value = "";
+        contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
+        listaCoincidencias.innerHTML = "";
+        buscador.setAttribute("placeholder", "Ingresa tu municipio o departamento");
+        buscador.focus();
+    }, 4000);
+    let ciudadesEx = new Set();
+    const opciones = compararResultado.map(card => {
+
+        let ciudad = card.ciudad_tienda;
+        let text = buscador.value;
+        let textLimpio = limpiarTexto(text);
+        let ciudLimpio = limpiarTexto(ciudad);
+        if (ciudLimpio.includes(textLimpio) && !ciudadesEx.has(ciudLimpio)) {
+
+            buscador.style.border = "";
+            listaCoincidencias.style.display = "block";
+            listaCoincidencias.innerHTML +=
+                `<span id="${ciudLimpio}" class="selectOp"><div class="dropdown-item">
+            <div class="panel panel-default">
+            <div class="panel-heading">
+            <p><i class="alk-icon-pin-generico"></i> ${ciudad}</p>
+            </div>
+            </div>
+            </div></span>`;
+            ciudadesEx.add(ciudLimpio);
+        }
+    }).join('');
+
+    lists = listaCoincidencias.querySelectorAll("span");
+
+    for (let i = 0; i < lists.length; i++) {
+        opSelect = lists[i].id;
+        lists[i].addEventListener('click', function selectCard() {
+            buscador.setAttribute("placeholder", lists[i].innerText);
+            cardSeleccionada(lists[i].id);
+        });
+    }
+
 }
 
 

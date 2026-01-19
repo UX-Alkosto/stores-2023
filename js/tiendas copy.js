@@ -327,7 +327,7 @@ function infoTiendas(info) {
                 <div class="cont-card">
                     <div class="card">
                         <div class="card-header header-envio">
-                            <h2 class="card-subtitle">${ciudadEnvio.ciudad_tienda}</h2>
+                            <h2 class="card-subtitle env">${ciudadEnvio.ciudad_tienda}</h2>
                             <span class="badge bg-primary">Envío gratis</span>
                         </div>
                         <div class="card-body">

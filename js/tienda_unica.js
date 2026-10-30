@@ -36,7 +36,7 @@ const formatoHora = `${horas}:${minutos}:${segundos}`;
 
 const fechaComoCadena = fecha;
 const dias = [
-    'domingo',
+    'domingos y festivos',
     'lunes',
     'martes',
     'miércoles',

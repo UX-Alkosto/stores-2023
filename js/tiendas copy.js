@@ -189,7 +189,7 @@ function generarCardTienda(tienda, index) {
                                 <li>Jueves: ${horariosCompletos.jueves}</li>
                                 <li>Viernes: ${horariosCompletos.viernes}</li>
                                 <li>Sábado: ${horariosCompletos.sabado}</li>
-                                <li>Domingo: ${horariosCompletos.domingo}</li>
+                                <li>Domingos y festivos: ${horariosCompletos.domingo}</li>
                             </ul>
                         </div>
                     </div>
@@ -456,7 +456,7 @@ function cardSeleccionada(ciudadId, regenerarBadges = true) {
 
     buscador.setAttribute("placeholder", "Ingresa el nombre de tu municipio");
     buscador.value = "";
-    
+
 
     contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
     listaCoincidencias.style.display = "none";

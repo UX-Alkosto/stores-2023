@@ -1,556 +1,548 @@
+// Configuración inicial
 const fecha = new Date();
-const hora = fecha.toLocaleTimeString();
-const horaMin = hora.substr(0, 5);
-const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
-const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
-
-const urlPrueba = "https://www.ktronix.com/nuestra-compania/tiendas/c/tiendas";
-//const urlSite = urlPrueba.split("/")[2];
-const urlSite = window.location.href.split("/")[2];
+const horas = String(fecha.getHours()).padStart(2, '0');
+const minutos = String(fecha.getMinutes()).padStart(2, '0');
 const formatoHora = `${horas}:${minutos}`;
 
-const fechaComoCadena = fecha;
-const dias = [
-    'domingo',
-    'lunes',
-    'martes',
-    'miércoles',
-    'jueves',
-    'viernes',
-    'sábado',
-];
+const urlSite = window.location.href.split("/")[2];
 
-
-const festivosCol = [
-    [1, 6],
-    [],
-    [24],
-    [17, 18],
-    [1],
-    [2, 23, 30],
-    [20],
-    [7, 18],
-    [],
-    [13],
-    [3, 17],
-    [8, 25]
-]
-
-const mesActual = festivosCol[fecha.getMonth()];
+const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const numeroDia = fecha.getDay();
+const mesActual = fecha.getMonth();
 const diaActual = fecha.getDate();
-let filtroFestivo = mesActual.filter(fest => fest == diaActual);
-const esFestivo = filtroFestivo.length > 0 && filtroFestivo[0] === diaActual;
 
+// URLs de las APIs
+const urlAPIs = {
+    "www.alkosto.com": {
+        url: "https://feeds.datafeedwatch.com/95958/3a4f7dba63e51e01ff8ad165f123a825cf30f99b.json",
+        nombre: "Tiendas Alkosto"
+    },
+    "www.ktronix.com": {
+        url: "https://feeds.datafeedwatch.com/95958/fb2f5eb90322be8f5cb1aea469a4551436034440.json",
+        nombre: "Tiendas Ktronix"
+    },
+    "www.alkomprar.com": {
+        url: "https://feeds.datafeedwatch.com/95958/c75c33c5369da362ae3e6fafb56ecd0b0ef78319.json",
+        nombre: "Tiendas Alkomprar"
+    }
+};
 
+const urlFestivos = "https://feeds.datafeedwatch.com/95958/8f39d01dbf20fb76ea7b59f3edbbaddc82cfe4ba.json";
 
+// Elementos del DOM
 const buscador = document.getElementById('search');
 const listaCoincidencias = document.getElementById('listaCoincidencias');
 const content = document.getElementById('content');
 const resultSearch = document.querySelector("#result-search");
-const svConfianza = document.querySelector("#sv-confianza");
 const carrusel = document.querySelector("#cont-carrusel");
-const titleServ = document.querySelector("#title-serv");
-const btn_tiendas = document.querySelector("#all-tiendas");
+
 const contInput = document.querySelector("#cont-input");
 
-var urlKT = "https://feeds.datafeedwatch.com/95958/fb2f5eb90322be8f5cb1aea469a4551436034440.json";
-var urlAK = "https://feeds.datafeedwatch.com/95958/3a4f7dba63e51e01ff8ad165f123a825cf30f99b.json";
-var urlALKP = "https://feeds.datafeedwatch.com/95958/c75c33c5369da362ae3e6fafb56ecd0b0ef78319.json";
-var textoIngresado = "";
-
-let opSelect;
-
-let urlAPI;
-let site;
-switch (urlSite) {
-    case "www.alkosto.com":
-        urlAPI = urlAK
-        site = "Tiendas Alkosto";
-        break;
-    case "www.ktronix.com":
-        urlAPI = urlKT
-        site = "Tiendas Ktronix";
-        break;
-    case "www.alkomprar.com":
-        urlAPI = urlALKP
-        site = "Tiendas Alkomprar";
-        break;
-
-    default:
-        break;
-}
-
+// Variables globales
 let globalData = {};
-const numeroDia = new Date(fechaComoCadena).getDay();
+let festivosData = [];
+let esFestivo = false;
+let todasLasTiendas = []; // Guardar todas las tiendas filtradas
+let ciudadesDisponibles = []; // Guardar ciudades disponibles
 
-const nombreDia = dias[numeroDia];
+const configSitio = urlAPIs[urlSite] || urlAPIs["www.ktronix.com"];
+const urlAPI = configSitio.url;
+const site = configSitio.nombre;
 
+// Función para normalizar texto
 function limpiarTexto(texto) {
-    let retorno = texto.replace()
-        .replace(/[áàäâå]/, "a")
-        .replace(/[éèëê]/, "e")
-        .replace(/[íìïî]/, "i")
-        .replace(/[óòöô]/, "o")
-        .replace(/[úúüû]/, "u")
-        .replace(/[ñ]/, "n")
-        .replace(/[\s()/*´'{}]+/gi, "-")
+    return texto
+        .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[ñ]/gi, "n")
+        .replace(/[\s()/*´'{}]+/gi, "-")
         .toLowerCase();
-    return retorno;
 }
 
-contInput.addEventListener('click', () => {
-    buscador.focus();
-})
+// Cargar festivos desde JSON
+async function cargarFestivos() {
+    try {
+        const response = await fetch(urlFestivos);
+        const data = await response.json();
+        festivosData = data.products;
 
-for (let index = numeroDia; index < dias.length; index++) {
-    const element = dias[index];
-    for (let j = numeroDia; j > dias.length; j--) {
-        const menor = array[j];
+        const festivoMes = festivosData[mesActual];
+
+        if (festivoMes && festivoMes.festivos) {
+            const festivosArray = JSON.parse(festivoMes.festivos);
+            esFestivo = festivosArray.includes(diaActual);
+        }
+    } catch (error) {
+        console.error("Error cargando festivos:", error);
+        esFestivo = false;
     }
 }
 
-function allTiendas() {
-    const resp = fetch(`${urlAPI}`)
-        .then(response => response.json())
-        .then(data => {
-            globalData["info-all"] = data.products;
-            let info = globalData["info-all"];
-            infoTiendas(info);
-        });
+// Cargar todas las tiendas
+async function allTiendas() {
+    try {
+        const response = await fetch(urlAPI);
+        const data = await response.json();
+        globalData["info-all"] = data.products;
+        infoTiendas(globalData["info-all"]);
+    } catch (error) {
+        console.error("Error cargando tiendas:", error);
+    }
     buscador.setAttribute("placeholder", "Ingresa el nombre de tu municipio");
     buscador.value = "";
     contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
 }
 
+// Mostrar todas las tiendas
 function allStores() {
-    btn_tiendas.classList.add("hidden");
     buscador.setAttribute("placeholder", "Ingresa tu municipio o departamento");
     infoTiendas(globalData["info-all"]);
-
 }
-const infoTiendas = info => {
-    listaCoincidencias.innerHTML = "";
-    content.innerHTML = "";
-    resultSearch.innerHTML = "";
-    if (info.length >= 1) {
-        let filtroTienda = info.filter(element => element.tienda == site);
-        const orderTiendas = filtroTienda.sort((a, b) =>
-            a.nombre_tienda.localeCompare(b.nombre_tienda)
-        );
-        if (orderTiendas.length >= 1) {
-            let mapTiendas = orderTiendas.map((t, id) => {
-                let idTienda = id;
-                let direccion = t.dir_tienda;
-                let mapsUrl = t.url_llegar;
-                let urlTienda = t.url_tienda;
-                let horarioDia = "";
-                horLunes = "";
 
-                t.ap_lun == "Cerrado" && t.cie_lun == "Cerrado" ? horLunes = "Cerrado" : horLunes = `${t.ap_lun.substr(0, 5)} a. m. - ${t.cie_lun.substr(0, 2) - 12}${t.cie_lun.substr(2, 3)} p. m.`;
-                horMartes = "";
-                t.ap_mar == "Cerrado" && t.cie_mar == "Cerrado" ? horMartes = "Cerrado" : horMartes = `${t.ap_mar.substr(0, 5)} a. m. - ${t.cie_mar.substr(0, 2) - 12}${t.cie_mar.substr(2, 3)} p. m.`;
-                horMie = "";
-                t.ap_mie == "Cerrado" && t.cie_mie == "Cerrado" ? horMie = "Cerrado" : horMie = `${t.ap_mie.substr(0, 5)} a. m. - ${t.cie_mie.substr(0, 2) - 12}${t.cie_mie.substr(2, 3)} p. m.`;
-                horJueves = "";
-                t.ap_jue == "Cerrado" && t.cie_jue == "Cerrado" ? horJueves = "Cerrado" : horJueves = `${t.ap_jue.substr(0, 5)} a. m. - ${t.cie_jue.substr(0, 2) - 12}${t.cie_jue.substr(2, 3)} p. m.`;
-                horViernes = "";
-                t.ap_vie == "Cerrado" && t.cie_vie == "Cerrado" ? horViernes = "Cerrado" : horViernes = `${t.ap_vie.substr(0, 5)} a. m. - ${t.cie_vie.substr(0, 2) - 12}${t.cie_vie.substr(2, 3)} p. m.`;
-                horSab = "";
-                t.ap_sab == "Cerrado" && t.cie_sab == "Cerrado" ? horSab = "Cerrado" : horSab = `${t.ap_sab.substr(0, 5)} a. m. - ${t.cie_sab.substr(0, 2) - 12}${t.cie_sab.substr(2, 3)} p. m.`;
-                horDom = "";
-                t.ap_dom == "Cerrado" && t.cie_dom == "Cerrado" ? horDom = "Cerrado" : horDom = `${t.ap_dom.substr(0, 5)} a. m. - ${t.cie_dom.substr(0, 2) - 12}${t.cie_dom.substr(2, 3)} p. m.`;
-                switch (numeroDia) {
-                    case 1:
-                        if (t.ap_lun != "Cerrado" || t.cie_lun != "Cerrado") {
-                            if (esFestivo) {
-                                hora_apertura = t.ap_dom.substr(0, 5)
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            } else {
-                                hora_apertura = t.ap_lun.substr(0, 5);
-                                aj_hora_cierre = t.cie_lun.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_lun.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            }
-                            horTienda = hora_apertura <= formatoHora && t.cie_lun >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
+// Formatear horario
+function formatearHorario(apertura, cierre) {
+    if (apertura === "Cerrado" || cierre === "Cerrado") {
+        return "Cerrado";
+    }
+    const horaCierre = parseInt(cierre.substr(0, 2)) - 12;
+    const minutosCierre = cierre.substr(2, 3);
+    return `${apertura.substr(0, 5)} a. m. - ${horaCierre}${minutosCierre} p. m.`;
+}
 
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                            ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
-                        break;
-                    case 2:
-                        if (t.ap_mar != "Cerrado" || t.cie_mar != "Cerrado") {
-                            if (esFestivo) {
-                                hora_apertura = t.ap_dom.substr(0, 5)
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            } else {
-                                hora_apertura = t.ap_mar.substr(0, 5);
-                                aj_hora_cierre = t.cie_mar.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_mar.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            }
-                            horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
+// Obtener horario del día
+function obtenerHorarioDia(tienda, dia) {
+    const horarios = {
+        1: { ap: tienda.ap_lun, cie: tienda.cie_lun },
+        2: { ap: tienda.ap_mar, cie: tienda.cie_mar },
+        3: { ap: tienda.ap_mie, cie: tienda.cie_mie },
+        4: { ap: tienda.ap_jue, cie: tienda.cie_jue },
+        5: { ap: tienda.ap_vie, cie: tienda.cie_vie },
+        6: { ap: tienda.ap_sab, cie: tienda.cie_sab },
+        0: { ap: tienda.ap_dom, cie: tienda.cie_dom }
+    };
 
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                        ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
+    const horario = esFestivo && dia !== 0 ? horarios[0] : horarios[dia];
+    return horario;
+}
 
-                        break;
-                    case 3:
-                        if (t.ap_mie != "Cerrado" || t.cie_mie != "Cerrado") {
+// Verificar si está abierto
+function estaAbierto(horario) {
+    if (!horario || horario.ap === "Cerrado" || horario.cie === "Cerrado") {
+        return false;
+    }
 
-                            if (esFestivo) {
-                                hora_apertura = t.ap_dom.substr(0, 5)
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            } else {
-                                hora_apertura = t.ap_mie.substr(0, 5);
-                                aj_hora_cierre = t.cie_mie.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_mie.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            }
-                            txtBadge = "";
-                            horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
+    const apertura = horario.ap.substr(0, 5);
+    const cierreHora = parseInt(horario.cie.substr(0, 2));
+    const cierreMin = horario.cie.substr(2, 3);
+    const cierre = `${cierreHora}${cierreMin}`;
 
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                        ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
+    return apertura <= formatoHora && cierre >= formatoHora;
+}
 
-                        break;
-                    case 4:
-                        if (t.ap_jue != "Cerrado" || t.cie_jue != "Cerrado") {
+// Generar card de tienda
+function generarCardTienda(tienda, index) {
+    const horario = obtenerHorarioDia(tienda, numeroDia);
+    const abierto = estaAbierto(horario);
 
-                            if (esFestivo) {
-                                hora_apertura = t.ap_dom.substr(0, 5)
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            } else {
-                                hora_apertura = t.ap_jue.substr(0, 5);
-                                aj_hora_cierre = t.cie_jue.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_jue.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            }
+    const badge = abierto
+        ? '<span class="badge bg-primary">Abierto</span>'
+        : '<span class="badge bg-danger">Cerrado</span>';
 
-                            txtBadge = "";
-                            horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                        ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
-                        break;
-                    case 5:
-                        if (t.ap_vie != "Cerrado" || t.cie_vie != "Cerrado") {
-                            if (esFestivo) {
-                                hora_apertura = t.ap_dom.substr(0, 5)
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            } else {
-                                hora_apertura = t.ap_vie.substr(0, 5);
-                                aj_hora_cierre = t.cie_vie.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_vie.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            }
-                            txtBadge = "";
-                            horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
-                            break;
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                        ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
-                    case 6:
-                        if (t.ap_sab != "Cerrado" || t.cie_sab != "Cerrado") {
-                            if (esFestivo) {
-                                hora_apertura = t.ap_dom.substr(0, 5)
-                                aj_hora_cierre = t.cie_dom.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            } else {
-                                hora_apertura = t.ap_sab.substr(0, 5);
-                                aj_hora_cierre = t.cie_sab.substr(0, 2);
-                                aj_hora_cierre2 = t.cie_sab.substr(2, 3);
-                                hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            }
-                            horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda}</h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                            ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
-                        break;
-                    case 0:
-                        if (t.ap_dom != "Cerrado" || t.cie_dom != "Cerrado") {
+    let horarioDia = "";
+    if (horario && horario.ap !== "Cerrado" && horario.cie !== "Cerrado") {
+        const horaCierre = parseInt(horario.cie.substr(0, 2)) - 12;
+        const minCierre = horario.cie.substr(2, 3);
+        horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${horario.ap.substr(0, 5)} a. m. - ${horaCierre}${minCierre} p. m.</p>`;
+    } else {
+        horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
+    }
 
-                            hora_apertura = t.ap_dom.substr(0, 5);
-                            aj_hora_cierre = t.cie_dom.substr(0, 2);
-                            aj_hora_cierre2 = t.cie_dom.substr(2, 3);
-                            hora_cierre = `${aj_hora_cierre}${aj_hora_cierre2}`;
-                            horTienda = hora_apertura <= formatoHora && hora_cierre >= formatoHora ? `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2> <span class="badge bg-primary">Abierto</span>` : `<h2 class="card-subtitle">
-                    ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i> hoy de ${hora_apertura} a. m. - ${aj_hora_cierre - 12}${aj_hora_cierre2} p. m.</p>`;
-                        } else {
-                            horTienda = `<h2 class="card-subtitle">
-                            ${t.nombre_tienda} </h2><span class="badge bg-danger">Cerrado</span>`;
-                            horarioDia = `<p class="horario abierto"><i class="alk-icon-clock"></i>Cerrado</p>`;
-                        }
-                        break;
+    const horariosCompletos = {
+        lunes: formatearHorario(tienda.ap_lun, tienda.cie_lun),
+        martes: formatearHorario(tienda.ap_mar, tienda.cie_mar),
+        miercoles: formatearHorario(tienda.ap_mie, tienda.cie_mie),
+        jueves: formatearHorario(tienda.ap_jue, tienda.cie_jue),
+        viernes: formatearHorario(tienda.ap_vie, tienda.cie_vie),
+        sabado: formatearHorario(tienda.ap_sab, tienda.cie_sab),
+        domingo: formatearHorario(tienda.ap_dom, tienda.cie_dom)
+    };
 
-                    default:
-                        break;
-                }
-
-                return `
-                                <div class="col-sm-6 col-md-4">
-                                <div class="card">
-                                <div class="card-header">
-                                ${horTienda}
-                                </div>
-                                <div class="card-body">
-                                <div class="cont-info-card">
-                                <p class="horario-tienda">${direccion}</p>
-                                <div data-toggle="collapse" data-target="#horariosAcordion${idTienda}" class="accordion-button collapsed">
-                                ${horarioDia}
-                                </div>
-                                <div class="collapse" id="horariosAcordion${idTienda}">
-                                <ul class="list-horario">
-                                <li>Lunes: ${horLunes} </li>
-                                <li>Martes: ${horMartes}</li>
-                                <li>Miércoles: ${horMie}</li>
-                                <li>Jueves: ${horJueves}</li>
-                                <li>Viernes: ${horViernes}</li>
-                                <li>Sábado: ${horSab}</li>
-                                <li>Domingo y festivos: ${horDom}</li>
-                                </ul>
-                                </div>
-                                </div>
-                                <div class="row d-flex">
-                                <a class="btn-detail" href="${urlTienda}" title="ir a tienda ${t.nombre_tienda}">
-                                <div class="btn-card">
-                                Ver detalle
-                                </div>
-                                </a>
-                                <a class="btn-detail" href="${mapsUrl}" title="Como llegar a ${t.nombre_tienda}">
-                                <div class="btn-card bl-d">
-                                Cómo llegar
-                                </div>
-                                </a>
-                                </div>
-                                </div>
-                                </div>
-                                </div>
-                                `;
-            }).join("");
-            document.addEventListener('click', function (event) {
-                if (!event.target.classList.contains('accordion-button')) {
-                    var collapses = document.querySelectorAll('.collapse.show');
-                    collapses.forEach(function (collapse) {
-                        var bootstrapCollapse = new bootstrap.Collapse(collapse, {
-                            toggle: false
-                        });
-                        bootstrapCollapse.hide();
-                    });
-                }
-            });
-            content.innerHTML = content.innerHTML + mapTiendas;
-
-            return;
-        } else {
-
-            info.map((e) => {
-                content.innerHTML = `
-                <div class="col-md-12">
-                <p>Actualmente no contamos con una tienda física en tu destino, pero recuerda que tienes <b>envío gratis a ${e.ciudad_tienda}</b> por todas tus compras en línea.</p>
+    return `
+        <div class="col-sm-6 col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-subtitle">${tienda.nombre_tienda}</h2>
+                    ${badge}
                 </div>
-                <div class="col-sm-6 col-md-4">
-                <div class="cont-card">
-                    <div class="card">
-                        <div class="card-header header-envio">
-                            <h2 class="card-subtitle">${e.ciudad_tienda}</h2>
-                            <span class="badge bg-primary">Envío gratis</span>
+                <div class="card-body">
+                    <div class="cont-info-card">
+                        <p class="horario-tienda">${tienda.dir_tienda}</p>
+                        <p class="ciudad-tienda">${tienda.ciudad_tienda}</p>
+                        <div data-toggle="collapse" data-target="#horariosAcordion${index}" class="accordion-button collapsed">
+                            ${horarioDia}
                         </div>
-                        <div class="card-body">
-                        <p class="txt-blue">Tiempo estimado de entrega: ${e.dias_entrega} días hábiles.</p>
-                        <div class="cont-horario">
-                            <div class="cnt-icon">
-                                <i class="alk-icon-clock"></i>
-                            </div>
-                            <div class="txt-horario">
-                                <p class="m-0">Lunes a Domingo</p>
-                                <p>${e.hor_entrega}</p>
-                            </div>
+                        <div class="collapse" id="horariosAcordion${index}">
+                            <ul class="list-horario">
+                                <li>Lunes: ${horariosCompletos.lunes}</li>
+                                <li>Martes: ${horariosCompletos.martes}</li>
+                                <li>Miércoles: ${horariosCompletos.miercoles}</li>
+                                <li>Jueves: ${horariosCompletos.jueves}</li>
+                                <li>Viernes: ${horariosCompletos.viernes}</li>
+                                <li>Sábado: ${horariosCompletos.sabado}</li>
+                                <li>Domingos y festivos: ${horariosCompletos.domingo}</li>
+                            </ul>
                         </div>
-                        </div>
-                        <a href="/entregas-devoluciones/envio-gratis" class="btn-envio">
-                        <div class="cnt-btn-envio">
-                            Conoce más sobre envío gratis
-                            </div>
-                            </a>
+                    </div>
+                    <div class="row d-flex">
+                        <a class="btn-detail" href="${tienda.url_tienda}" title="ir a tienda ${tienda.nombre_tienda}">
+                            <div class="btn-card">Ver detalle</div>
+                        </a>
+                        <a class="btn-detail" href="${tienda.url_llegar}" title="Como llegar a ${tienda.nombre_tienda}">
+                            <div class="btn-card bl-d">Cómo llegar</div>
+                        </a>
                     </div>
                 </div>
-                </div>
-                `;
-            })
-            let cardBadge = document.querySelector(".card-subtitle");
-            cardBadge.style.width = "65%";
-        }
+            </div>
+        </div>
+    `;
+}
+
+// Generar badges de ciudades (MEJORADO)
+function generarBadgesCiudades(tiendasOrdenadas, ciudadSeleccionada = null) {
+    const contBadges = document.querySelector("#cont-badge-city");
+    if (!contBadges) return;
+
+    // Obtener ciudades únicas
+    ciudadesDisponibles = [...new Set(tiendasOrdenadas.map(tienda =>
+        tienda.ciudad_tienda?.trim().split(",")[0]
+    ).filter(Boolean))];
+
+    // Ordenar alfabéticamente
+    ciudadesDisponibles.sort();
+
+    // Generar HTML de badges
+    let badgesHTML = `
+        <div class="badges_item badges_item-html ${!ciudadSeleccionada ? 'badge-selected-cyd' : ''}" data-ciudad="todas">
+            <div class="badges_item_text">Todas las tiendas</div>
+        </div>
+    `;
+
+    badgesHTML += ciudadesDisponibles.map(ciudad => `
+        <div class="badges_item badges_item-html ${limpiarTexto(ciudad) === ciudadSeleccionada ? 'badge-selected-cyd' : ''}" data-ciudad="${limpiarTexto(ciudad)}">
+            <div class="badges_item_text">${ciudad}</div>
+        </div>
+    `).join("");
+
+    badgesHTML += `
+        <div class="badges_item badges_item-html badges_item-otras" data-ciudad="otras">
+            <div class="badges_item_text"><i class="alk-icon-search-mobile icon-search"></i>Otras ciudades</div>
+        </div>
+    `;
+
+    contBadges.innerHTML = badgesHTML;
+
+    // Agregar event listeners
+    const optionsBadge = document.querySelectorAll(".badges_item-html");
+    optionsBadge.forEach((badge) => {
+        badge.addEventListener("click", function () {
+            const ciudadData = this.getAttribute('data-ciudad');
+
+            if (ciudadData === 'todas') {
+                // Mostrar todas las tiendas
+                optionsBadge.forEach(b => b.classList.remove("badge-selected-cyd"));
+                this.classList.add("badge-selected-cyd");
+                mostrarTiendasFiltradas(todasLasTiendas);
+                listaCoincidencias.style.display = "none";
+                listaCoincidencias.innerHTML = "";
+                buscador.value = "";
+                contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
+            } else if (ciudadData === 'otras') {
+                // Focus en buscador
+                buscador.focus();
+                buscador.value = "";
+                listaCoincidencias.innerHTML = "";
+                listaCoincidencias.style.display = "none";
+            } else {
+                // Filtrar por ciudad específica
+                optionsBadge.forEach(b => b.classList.remove("badge-selected-cyd"));
+                this.classList.add("badge-selected-cyd");
+                cardSeleccionada(ciudadData, false); // false = no regenerar badges
+            }
+        });
+    });
+}
+
+// Mostrar tiendas filtradas (NUEVA FUNCIÓN)
+function mostrarTiendasFiltradas(tiendas) {
+
+    if (tiendas.length > 0) {
+        const cardsHTML = tiendas.map((tienda, index) =>
+            generarCardTienda(tienda, index)
+        ).join("");
+
+        content.innerHTML = cardsHTML;
+
+        document.addEventListener('click', function (event) {
+            if (!event.target.classList.contains('accordion-button')) {
+                const collapses = document.querySelectorAll('.collapse.show');
+                collapses.forEach(collapse => {
+                    if (typeof bootstrap !== 'undefined') {
+                        const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
+                        bsCollapse.hide();
+                    }
+                });
+            }
+        });
     }
 }
 
+// Mostrar información de tiendas (MEJORADO)
+function infoTiendas(info) {
+    listaCoincidencias.innerHTML = "";
+    content.innerHTML = "";
+    resultSearch.innerHTML = "";
+
+    if (!info || info.length === 0) return;
+
+    const tiendasFiltradas = info.filter(element => element.tienda === site);
+    const tiendasOrdenadas = tiendasFiltradas.sort((a, b) =>
+        a.ciudad_tienda.localeCompare(b.ciudad_tienda)
+    );
+
+    // Guardar todas las tiendas globalmente
+    todasLasTiendas = tiendasOrdenadas;
+
+    // Generar badges (sin ciudad seleccionada = mostrar todas)
+    generarBadgesCiudades(tiendasOrdenadas);
+
+    if (tiendasOrdenadas.length > 0) {
+        mostrarTiendasFiltradas(tiendasOrdenadas);
+    } else {
+        const ciudadEnvio = info[0];
+        content.innerHTML = `
+            <div class="col-md-12">
+                <p>Actualmente no contamos con una tienda física en tu destino, pero recuerda que tienes <b>envío gratis a ${ciudadEnvio.ciudad_tienda}</b> por todas tus compras en línea.</p>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="cont-card">
+                    <div class="card">
+                        <div class="card-header header-envio">
+                            <h2 class="card-subtitle env">${ciudadEnvio.ciudad_tienda}</h2>
+                            <span class="badge bg-primary">Envío gratis</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="txt-blue">Tiempo estimado de entrega: ${ciudadEnvio.dias_entrega} días hábiles.</p>
+                            <div class="cont-horario">
+                                <div class="cnt-icon">
+                                    <i class="alk-icon-clock"></i>
+                                </div>
+                                <div class="txt-horario">
+                                    <p class="m-0">Lunes a Domingo</p>
+                                    <p>${ciudadEnvio.hor_entrega}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/entregas-devoluciones/envio-gratis" class="btn-envio">
+                            <div class="cnt-btn-envio">Conoce más sobre envío gratis</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Buscar resultados
 let resultadosPrevios = new Set();
 
-const buscarResultados = async searchText => {
-    btn_tiendas.classList.add("hidden");
+async function buscarResultados(searchText) {
+
     const consulta = globalData["info-all"];
 
     if (searchText.length < 3) {
         listaCoincidencias.innerHTML = "";
         contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
-        resultadosPrevios.clear(); // Limpiamos los resultados previos        
+        resultadosPrevios.clear();
         return;
     }
 
-    let compararResultado = consulta.filter(
-        resultado => {
-            let ciudad = limpiarTexto(resultado.ciudad_tienda);
-            return ciudad.includes(limpiarTexto(searchText));
-        }
-    );
+    const compararResultado = consulta.filter(resultado => {
+        const ciudad = limpiarTexto(resultado.ciudad_tienda);
+        return ciudad.includes(limpiarTexto(searchText));
+    });
 
-    let nuevosResultados = new Set(compararResultado.map(r => limpiarTexto(r.ciudad_tienda)));
+    const nuevosResultados = new Set(compararResultado.map(r => limpiarTexto(r.ciudad_tienda)));
+
     if (compararSets(resultadosPrevios, nuevosResultados)) return;
 
     resultadosPrevios = nuevosResultados;
-
     printRes(compararResultado);
 }
 
-// Función para comparar dos sets
-const compararSets = (set1, set2) => {
+// Comparar sets
+function compararSets(set1, set2) {
     if (set1.size !== set2.size) return false;
     for (let item of set1) {
         if (!set2.has(item)) return false;
     }
     return true;
-};
+}
 
-const printRes = compararResultado => {
+// Imprimir resultados de búsqueda
+function printRes(compararResultado) {
     listaCoincidencias.innerHTML = "";
     content.innerHTML = "";
     resultSearch.innerHTML = "";
-    let lists = "";
-    carrusel.style.display = "none";
+
+    if (carrusel) carrusel.style.display = "none";
+
     if (compararResultado.length === 0) {
-        listaCoincidencias.style.display = "block";
-        listaCoincidencias.innerHTML = `<div class="cont-no-results txt-center">
-        
-        <img class="img img-responsive" src="https://media.aws.alkomprar.com/ymarketingcolcomercio/Alkosto/envio-gratis/envio_no_encontrado.png"/>
-        <div class="txt-no-results txt-center">
-        <h4>¡Aún no llegamos a tu destino!
-        Seguimos trabajando para ello.</h4>
-        </div>
-        </div>`;
-        buscador.style.border = "1px solid #DD171B";
-        contInput.innerHTML = `<i class="alk-icon-close icon-borrar" title="Limpiar campo"></i>`;
-        contInput.addEventListener('click', () => {
-            contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
-            buscador.value = "";
-            buscador.style.border = "";
-            buscador.setAttribute("placeholder", "Ingresa el nombre de tu municipio");
-            buscador.focus();
-            allStores();
-        })
+        mostrarNoResultados();
         return;
     }
 
-
     contInput.innerHTML = `<i class="alk-icon-close icon-search" title="Limpiar campo"></i>`;
-    contInput.addEventListener('click', () => {
+
+    const ciudadesUnicas = new Set();
+    const textoBusqueda = limpiarTexto(buscador.value);
+
+    compararResultado.forEach(card => {
+        const ciudadLimpia = limpiarTexto(card.ciudad_tienda);
+
+        if (ciudadLimpia.includes(textoBusqueda) && !ciudadesUnicas.has(ciudadLimpia)) {
+            buscador.style.border = "";
+            listaCoincidencias.style.display = "block";
+            listaCoincidencias.innerHTML += `
+                <span id="${ciudadLimpia}" class="selectOp">
+                    <div class="dropdown-item">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <p><i class="alk-icon-pin-generico"></i> ${card.ciudad_tienda}</p>
+                            </div>
+                        </div>
+                    </div>
+                </span>
+            `;
+            ciudadesUnicas.add(ciudadLimpia);
+        }
+    });
+
+    const opciones = listaCoincidencias.querySelectorAll("span");
+    opciones.forEach(opcion => {
+        opcion.addEventListener('click', function () {
+            buscador.setAttribute("placeholder", this.innerText);
+            cardSeleccionada(this.id, true);
+        });
+    });
+}
+
+// Mostrar mensaje de no resultados
+function mostrarNoResultados() {
+    listaCoincidencias.style.display = "block";
+    listaCoincidencias.innerHTML = `
+        <div class="cont-no-results txt-center">
+            <img class="img img-responsive" src="https://media.aws.alkomprar.com/ymarketingcolcomercio/Alkosto/envio-gratis/envio_no_encontrado.png"/>
+            <div class="txt-no-results txt-center">
+                <h4>¡Aún no llegamos a tu destino! Seguimos trabajando para ello.</h4>
+            </div>
+        </div>
+    `;
+    buscador.style.border = "1px solid #DD171B";
+    contInput.innerHTML = `<i class="alk-icon-close icon-borrar" title="Limpiar campo"></i>`;
+}
+
+// Seleccionar ciudad (MEJORADO)
+function cardSeleccionada(ciudadId, regenerarBadges = true) {
+
+    buscador.setAttribute("placeholder", "Ingresa el nombre de tu municipio");
+    buscador.value = "";
+
+
+    contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
+    listaCoincidencias.style.display = "none";
+
+    const filterCiudad = todasLasTiendas.filter(tienda =>
+        limpiarTexto(tienda.ciudad_tienda?.trim().split(",")[0]) === ciudadId?.trim().split(",")[0]
+    );
+
+    buscador.value = "";
+
+    // Mostrar tiendas filtradas
+    if (filterCiudad.length === 0) {
+        console.log("cero", ciudadId);
+
+        const info = globalData["info-all"].filter(tienda =>
+            limpiarTexto(tienda.ciudad_tienda?.trim().split(",")[0]) === ciudadId?.trim().split(",")[0]
+        );
+
+        console.log(info);
+
+
+
+        const ciudadEnvio = info[0];
+        content.innerHTML = `
+             <div class="col-md-12">
+                 <p>Actualmente no contamos con una tienda física en tu destino, pero recuerda que tienes <b>envío gratis a ${ciudadEnvio.ciudad_tienda}</b> por todas tus compras en línea.</p>
+             </div>
+             <div class="col-sm-6 col-md-4">
+                 <div class="cont-card">
+                     <div class="card">
+                         <div class="card-header header-envio">
+                             <h2 class="card-subtitle">${ciudadEnvio.ciudad_tienda}</h2>
+                             <span class="badge bg-primary">Envío gratis</span>
+                         </div>
+                         <div class="card-body">
+                             <p class="txt-blue">Tiempo estimado de entrega: ${ciudadEnvio.dias_entrega} días hábiles.</p>
+                             <div class="cont-horario">
+                                 <div class="cnt-icon">
+                                     <i class="alk-icon-clock"></i>
+                                 </div>
+                                 <div class="txt-horario">
+                                     <p class="m-0">Lunes a Domingo</p>
+                                     <p>${ciudadEnvio.hor_entrega}</p>
+                                 </div>
+                             </div>
+                         </div>
+                         <a href="/entregas-devoluciones/envio-gratis" class="btn-envio">
+                             <div class="cnt-btn-envio">Conoce más sobre envío gratis</div>
+                         </a>
+                     </div>
+                 </div>
+             </div>
+         `;
+    } else {
+        mostrarTiendasFiltradas(filterCiudad);
+    }
+
+
+    // Regenerar badges manteniendo la selección
+    if (regenerarBadges) {
+        generarBadgesCiudades(todasLasTiendas, ciudadId);
+    }
+}
+
+// Event listeners
+contInput.addEventListener('click', () => {
+    if (contInput.querySelector('.icon-borrar') || contInput.querySelector('.icon-search.alk-icon-close')) {
         buscador.value = "";
         contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
         listaCoincidencias.innerHTML = "";
+        buscador.style.border = "";
         buscador.setAttribute("placeholder", "Ingresa tu municipio o departamento");
         buscador.focus();
-    }, 4000);
-    let ciudadesEx = new Set();
-    const opciones = compararResultado.map(card => {
-
-        let ciudad = card.ciudad_tienda;
-        let text = buscador.value;
-        let textLimpio = limpiarTexto(text);
-        let ciudLimpio = limpiarTexto(ciudad);
-        if (ciudLimpio.includes(textLimpio) && !ciudadesEx.has(ciudLimpio)) {
-
-            buscador.style.border = "";
-            listaCoincidencias.style.display = "block";
-            listaCoincidencias.innerHTML +=
-                `<span id="${ciudLimpio}" class="selectOp"><div class="dropdown-item">
-            <div class="panel panel-default">
-            <div class="panel-heading">
-            <p><i class="alk-icon-pin-generico"></i> ${ciudad}</p>
-            </div>
-            </div>
-            </div></span>`;
-            ciudadesEx.add(ciudLimpio);
-        }
-    }).join('');
-
-    lists = listaCoincidencias.querySelectorAll("span");
-
-    for (let i = 0; i < lists.length; i++) {
-        opSelect = lists[i].id;
-        lists[i].addEventListener('click', function selectCard() {
-            buscador.setAttribute("placeholder", lists[i].innerText);
-            cardSeleccionada(lists[i].id);
-        });
+        allStores();
+    } else {
+        buscador.focus();
     }
+});
 
-}
 
-
-const cardSeleccionada = sel => {
-    contInput.innerHTML = `<i class="alk-icon-search-mobile icon-search"></i>`;
-    listaCoincidencias.style.display = "none";
-    filterCiudad = globalData["info-all"].filter((i) => {
-        return limpiarTexto(i.ciudad_tienda) == sel;
-    })
-    btn_tiendas.classList.remove("hidden");
-    buscador.value = "";
-    infoTiendas(filterCiudad)
-    return filterCiudad;
-}
-allTiendas()
-btn_tiendas.addEventListener("click", allStores);
 buscador.addEventListener('input', () => buscarResultados(buscador.value));
+
+// Inicialización
+async function init() {
+    await cargarFestivos();
+    await allTiendas();
+}
+
+init();

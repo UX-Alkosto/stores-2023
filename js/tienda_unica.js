@@ -5,30 +5,6 @@ const horas = ((fecha.getHours() < 10) ? "0" : "") + fecha.getHours();
 const minutos = ((fecha.getMinutes() < 10) ? "0" : "") + fecha.getMinutes();
 const segundos = ((fecha.getSeconds() < 10) ? "0" : "") + fecha.getSeconds();
 
-
-/*
-const urlPage = "https://www.alkosto.com/nuestra-compania/tiendas/bogota/oulet?sdsd";
-const urlPageLimpia = urlPage.split("?")[0];
-const urlSite = urlPage.split("/")[2];
-console.log(urlPageLimpia);
- console.log(fecha.getDay());
-console.log(fecha.getMonth()); */
-const festivosCol = [
-    [1, 6],
-    [],
-    [24],
-    [17, 18],
-    [1],
-    [2, 23, 30],
-    [20],
-    [7, 18],
-    [],
-    [13],
-    [3, 17],
-    [8, 25]
-]
-
-
 const urlPage = window.location.href;
 const urlPageLimpia = urlPage.split("?")[0];
 const urlSite = urlPage.split("/")[2];
@@ -45,12 +21,13 @@ const dias = [
     'sábado',
 ];
 
-
 const content = document.getElementById('cont-principal');
 
 var urlKT = "https://feeds.datafeedwatch.com/95958/fb2f5eb90322be8f5cb1aea469a4551436034440.json";
 var urlAK = "https://feeds.datafeedwatch.com/95958/3a4f7dba63e51e01ff8ad165f123a825cf30f99b.json";
 var urlALKP = "https://feeds.datafeedwatch.com/95958/c75c33c5369da362ae3e6fafb56ecd0b0ef78319.json";
+const urlFestivos = "https://feeds.datafeedwatch.com/95958/8f39d01dbf20fb76ea7b59f3edbbaddc82cfe4ba.json"; // Integrado desde tiendas.js
+
 var textoIngresado = "";
 
 let opSelect;
@@ -79,14 +56,34 @@ switch (urlSite) {
 let globalData = {};
 
 const numeroDia = new Date(fechaComoCadena).getDay();
-const mesActual = festivosCol[fecha.getMonth()];
+const mesActual = fecha.getMonth();
 const diaActual = fecha.getDate();
-let filtroFestivo = mesActual.filter(fest => fest == diaActual);
-const esFestivo = filtroFestivo.length > 0 && filtroFestivo[0] === diaActual;
+let esFestivo = false;
+let festivosData = [];
+
 const diasSemana = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
 let horarios = {};
 
 const nombreDia = dias[numeroDia];
+
+// Función agregada para validar festivos dinámicamente desde el JSON
+async function cargarFestivos() {
+    try {
+        const response = await fetch(urlFestivos);
+        const data = await response.json();
+        festivosData = data.products;
+
+        const festivoMes = festivosData[mesActual];
+
+        if (festivoMes && festivoMes.festivos) {
+            const festivosArray = JSON.parse(festivoMes.festivos);
+            esFestivo = festivosArray.includes(diaActual);
+        }
+    } catch (error) {
+        console.error("Error cargando festivos:", error);
+        esFestivo = false;
+    }
+}
 
 function limpiarTexto(texto) {
     let retorno = texto.replace()
@@ -155,7 +152,7 @@ const printInfo = (i) => {
 
         horario = `<p class="apertura">Hoy ${listHor[0].dia}${msjFestivo}: <br><span class="close-txt"> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m. </span></p>`
     } else if (listHor[0].apertura <= formatoHora && listHor[0].cierre >= formatoHora) {
-        horario = `<p class="apertura">Hoy ${listHor[0].dia}${msjFestivo}: <br> <span class="open"> abierto, cierra a las ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </span></p>`
+        horario = `<p class="apertura">Hoy ${listHor[0].dia}${msjFestivo}: <br> <span class="open"> abierto, cierra a las ${listHor[0].cierre.substr(0, 2) - 12}${listHor[0].cierre.substr(2, 3)} p. m. </span></p>`
 
     } else if (listHor[0].apertura >= formatoHora && listHor[0].cierre >= formatoHora) {
         horario = `<p class="apertura"><span class="close-txt">Cerrado, abre a las ${listHor[0].apertura.substr(0, 5)} a. m. </span></p>`
@@ -167,7 +164,7 @@ const printInfo = (i) => {
     let listDias = "";
     listHor.map((h, i) => {
         let horDia = "";
-        horDia = h.apertura == "Cerrado" || h.cierre == "Cerrado" ? horDia = `<li class='element-hor'>${h.dia.charAt(0).toUpperCase() + h.dia.slice(1)}: Cerrado</li>` : horDia = `<li class="element-hor">${h.dia.charAt(0).toUpperCase() + h.dia.slice(1)} de: ${h.apertura.substr(0, 5)} a. m. a ${h.cierre.substr(0, 2)-12}${h.cierre.substr(2,3)} p. m.</li>`
+        horDia = h.apertura == "Cerrado" || h.cierre == "Cerrado" ? horDia = `<li class='element-hor'>${h.dia.charAt(0).toUpperCase() + h.dia.slice(1)}: Cerrado</li>` : horDia = `<li class="element-hor">${h.dia.charAt(0).toUpperCase() + h.dia.slice(1)} de: ${h.apertura.substr(0, 5)} a. m. a ${h.cierre.substr(0, 2) - 12}${h.cierre.substr(2, 3)} p. m.</li>`
 
         return listDias += horDia;
     })
@@ -253,11 +250,11 @@ const otherStores = (i) => {
             horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Cerrado, abre mañana a las ${listHor[1].apertura.substr(0, 5)} a. m.</p>`
         } else if (listHor[0].apertura <= formatoHora && listHor[0].cierre >= formatoHora) {
             badge = '<span class="badge bg-primary">Abierto</span>';
-            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Hoy de ${listHor[0].apertura.substr(0, 5)} a. m. a ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </p>`
+            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Hoy de ${listHor[0].apertura.substr(0, 5)} a. m. a ${listHor[0].cierre.substr(0, 2) - 12}${listHor[0].cierre.substr(2, 3)} p. m. </p>`
 
         } else if (listHor[0].apertura >= formatoHora && listHor[0].cierre >= formatoHora) {
             badge = '<span class="badge bg-danger">Cerrado</span>';
-            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Hoy de ${listHor[0].apertura.substr(0, 5)} a. m. a ${listHor[0].cierre.substr(0, 2)-12}${listHor[0].cierre.substr(2,3)} p. m. </p>`
+            horario = `<p class="horario abierto"><i class="alk-icon-clock"></i> Hoy de ${listHor[0].apertura.substr(0, 5)} a. m. a ${listHor[0].cierre.substr(0, 2) - 12}${listHor[0].cierre.substr(2, 3)} p. m. </p>`
 
         } else {
             badge = '<span class="badge bg-danger">Cerrado</span>';
@@ -304,4 +301,11 @@ const otherStores = (i) => {
         element.style.border = ` 1px solid ${bgPrimary}`;
     });
 }
-infoStore();
+
+// Inicialización asíncrona para garantizar la carga del JSON antes de pintar el DOM
+async function init() {
+    await cargarFestivos();
+    infoStore();
+}
+
+init();
